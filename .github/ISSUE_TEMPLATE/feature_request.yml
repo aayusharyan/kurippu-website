@@ -1,0 +1,38 @@
+name: Suggestion
+description: Propose a change or improvement to the website
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This tracker is for the **website** (landing page, privacy policy and the live demo). Ideas for the Kurippu extension itself are out of scope here.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to improve?
+      description: Describe the problem or the opportunity, not just the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What do you suggest?
+      description: A rough sketch is plenty. For larger changes, it helps to agree on the approach here before opening a pull request.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Project principles
+      description: See "Project principles" in CONTRIBUTING.md.
+      options:
+        - label: This doesn't need analytics, trackers, third-party requests or hosted assets
+          required: true
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd be willing to open a pull request for this
