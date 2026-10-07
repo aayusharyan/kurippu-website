@@ -1,0 +1,49 @@
+name: Bug report
+description: Something on the website is broken or looks wrong
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. This tracker is for the **website** (landing page, privacy policy and the live demo). For a security or privacy problem, please don't file it here; follow the instructions in SECURITY.md in the repository root instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect to see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The page, and the clicks or keys that trigger it.
+      placeholder: |
+        1. Open the landing page
+        2. Hold Ctrl and click inside the hero
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Browser name and version number
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and device
+      placeholder: macOS, Windows, Linux, iOS, Android...
+  - type: input
+    id: viewport
+    attributes:
+      label: Viewport or screen size
+      description: Helpful for layout problems.
+      placeholder: 390x844 (phone), 1440x900...
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or console errors
+      description: Drag images in here, or paste any errors from the browser console.
