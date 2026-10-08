@@ -1,0 +1,179 @@
+---
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { CONTACT_EMAIL, EXTENSION_REPOSITORY_URL, NEW_TAB, THIRD_PARTY_NOTICES_URL, href } from '../config';
+
+// Static copy rendered with set:html, so typographic characters are written as HTML entities.
+const permissions = [
+  ['Read and change data on websites', 'Places notes on visited pages and reconnects them to their chosen page elements.'],
+  ['Context menus', 'Provides the &ldquo;Add sticky note here&rdquo; option when you right-click.'],
+  ['Storage', 'Keeps note data locally and makes browser sync available.'],
+  ['Identity', 'Connects your Google account after you opt into Drive backup.'],
+  ['Alarms', 'Triggers scheduled backups at the hourly or daily interval you select.'],
+];
+---
+<Base
+  title="Kurippu - Privacy policy"
+  description="How Kurippu handles note data, optional Google Drive backups and consent-based website analytics."
+>
+  <div class="site">
+    <header class="wrap">
+      <Logo to={href()} />
+      <a class="back" href={href()}><span class="arrow" aria-hidden="true">&larr;</span><span class="label">Back to the site</span></a>
+    </header>
+
+    <main>
+      <article>
+        <div class="intro">
+          <div class="kicker tnum">Effective 8 October 2026</div>
+          <h1>Privacy policy</h1>
+          <p class="lead">This policy covers the Kurippu browser extension and this product website. The extension keeps note data under your control and contains no advertising or analytics. The website measures visits with Google Analytics only after you agree.</p>
+        </div>
+
+        <section>
+          <h2>Data attached to a note</h2>
+          <p class="prose">A saved note consists of its written content, color, tags, creation and edit times, and the address of the page where you made it. Kurippu also records only the placement details required to restore that note: its page position, a reference to the closest relevant element and a brief sample of that element&rsquo;s text. It does not retain other material from the websites you browse.</p>
+        </section>
+
+        <section>
+          <h2>Storage locations</h2>
+          <dl>
+            <dt>Your device</dt><dd>The primary copy lives in storage assigned to Kurippu by your browser. Without sync or backup, it remains on that device.</dd>
+            <dt>Your browser account</dt><dd>When browser sync is enabled, your browser provider transfers Kurippu data among your signed-in devices. The provider handles that synced copy according to its own privacy policy.</dd>
+            <dt>Your Google Drive</dt><dd>A backup is placed there only after you enable the optional Drive feature described next.</dd>
+          </dl>
+        </section>
+
+        <section>
+          <h2>Optional Drive backups</h2>
+          <p class="prose">Kurippu does not activate this feature until you choose it and sign in to Google. The permission it requests is limited to a private app folder, where the extension maintains one backup file. That scope does not allow Kurippu to view, open or modify the rest of your Drive. The extension also obtains the connected account&rsquo;s email address and ID. It displays the email in settings for account identification and uses the ID when deriving the backup&rsquo;s encryption key.</p>
+          <p class="prose">Encryption happens locally before the file is uploaded, and the extension communicates with Google without passing data through a Kurippu server. Since the encryption key is based on your Google account, protecting that account protects the backup. We recommend enabling 2-Step Verification.</p>
+          <p class="boxed">Kurippu&rsquo;s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" {...NEW_TAB}>Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+        </section>
+
+        <section>
+          <h2>Analytics on this website</h2>
+          <p class="prose">With your permission, this site uses Google Analytics 4 to learn how people arrive and which parts they use. The information sent to Google includes page views, page addresses, referring pages, selected actions such as Add to Chrome button clicks, and device details such as language, browser, operating system, device type and screen size. Google may also determine an approximate location. Analytics does not produce heatmaps or screen recordings here, and we exclude the text entered in demo notes, your name, your email address and any other custom identifier.</p>
+          <p class="prose">Nothing from Google Analytics is loaded or requested before you select <i>Allow analytics</i>. After consent, it may place first-party cookies including <code>_ga</code> and <code>_ga_&lt;container-id&gt;</code>, which distinguish visitors and sessions. We keep advertising storage, advertising user data, advertising personalization and Google signals switched off.</p>
+          <p class="prose">The site records your decision in this browser&rsquo;s <code>localStorage</code> as <code>kurippu-site-google-analytics-consent-v1</code>. That entry uses browser storage rather than a cookie. The <i>Analytics settings</i> link in the footer lets you revise the decision whenever you wish. If you decline or later withdraw permission, future pages will not load Google Analytics. Previously created analytics cookies can persist until you remove them or they expire, but this site will neither load Analytics nor read those cookies.</p>
+          <p class="prose">Google is the recipient and processor of analytics information. During collection, it uses IP addresses for functions that include estimating location and securing the service, then says it discards the raw addresses. The default lifetime of <code>_ga</code> cookies is two years. Retention of user-level and event-level information depends on the Analytics property&rsquo;s configured retention period. Further details are available in <a href="https://policies.google.com/privacy" {...NEW_TAB}>Google&rsquo;s Privacy Policy</a>, its explanation of <a href="https://policies.google.com/technologies/partner-sites" {...NEW_TAB}>data use on partner sites</a> and the <a href="https://support.google.com/analytics/answer/7667196" {...NEW_TAB}>Google Analytics retention documentation</a>.</p>
+        </section>
+
+        <section>
+          <h2>Limits on extension data use</h2>
+          <ul>
+            <li>No Kurippu-operated server receives, holds or forwards note data.</li>
+            <li>Analytics, tracking pixels and crash-reporting services are absent from the extension.</li>
+            <li>Kurippu displays no advertising and does not sell or rent data. The website sends analytics information only to Google under the terms above.</li>
+            <li>Kurippu does not compile a browsing history. It retains an address only when you attach a note to that page.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Why the extension asks for access</h2>
+          <table class="table">
+            <thead><tr><th>Permission</th><th>Why</th></tr></thead>
+            <tbody>
+              {permissions.map(([p, why]) => <tr><td class="perm">{p}</td><td set:html={why} /></tr>)}
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>Managing and deleting your data</h2>
+          <p class="prose">Individual notes can be changed or removed at any time. From the options page, you can download the complete collection as Markdown or JSON, or erase every note. Disconnecting Google Drive ends future backups. To delete its existing backup as well, remove Kurippu&rsquo;s data from <i>Manage apps</i> in Drive settings, then revoke the connection at <a href="https://myaccount.google.com/permissions" {...NEW_TAB}>myaccount.google.com/permissions</a>. Removing the extension clears the Kurippu data held by your browser.</p>
+        </section>
+
+        <section>
+          <h2>Children</h2>
+          <p class="plain">Neither the extension nor this site is intended for anyone younger than 13. We do not knowingly gather information from children in that age group.</p>
+        </section>
+
+        <section>
+          <h2>Independent verification</h2>
+          <p class="prose">The extension is free and open source. Its <a href={EXTENSION_REPOSITORY_URL} {...NEW_TAB}>public repository on GitHub</a> lets you inspect its storage and network behavior directly. Attribution and license information for this website&rsquo;s fonts and icons appears in the <a href={THIRD_PARTY_NOTICES_URL} {...NEW_TAB}>third-party notices</a>.</p>
+        </section>
+
+        <section>
+          <h2>Policy updates and questions</h2>
+          <p class="prose">Revisions will appear on this page with a new effective date. Material changes will also be identified in the extension&rsquo;s release notes. For questions about this policy, contact {CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`} {...NEW_TAB}>{CONTACT_EMAIL}</a> : <span class="todo">[contact email]</span>}.</p>
+        </section>
+      </article>
+    </main>
+
+    <SiteFooter links={[{ label: 'Home', href: href() }, { label: 'Source code', href: EXTENSION_REPOSITORY_URL, newTab: true }]} />
+  </div>
+</Base>
+
+<style>
+  .site {
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+  header {
+    padding-block: 22px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .back { margin-left: auto; font-size: 14px; }
+  article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 72px clamp(20px, 5vw, 40px) 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .intro { display: flex; flex-direction: column; gap: 14px; }
+  h1 {
+    margin: 0;
+    font: 400 clamp(44px, 6vw, 68px)/1 var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+  .lead { margin: 0; font-size: 18px; line-height: 1.6; text-wrap: pretty; }
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 28px;
+  }
+  h2 { margin: 0; font: 600 26px/1.2 var(--font-heading); letter-spacing: normal; }
+  .prose { font-size: 15px; line-height: 1.7; }
+  .plain { margin: 0; font-size: 15px; line-height: 1.7; }
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+    column-gap: 24px;
+    row-gap: 16px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  dt { font: 600 17px/1.4 var(--font-heading); }
+  dd { margin: 0; }
+  .boxed {
+    margin: 0;
+    padding: 14px 18px;
+    border: 1px solid var(--color-divider);
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; font-size: 15px; line-height: 1.6; }
+  li { padding: 10px 0; border-bottom: 1px solid var(--color-divider); }
+  li:last-child { border-bottom: 0; }
+  .perm { white-space: nowrap; }
+  .todo {
+    padding: 1px 6px;
+    background: var(--color-accent-100);
+    color: var(--color-accent-800);
+    border-radius: 3px;
+  }
+</style>
