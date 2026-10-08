@@ -1,0 +1,79 @@
+---
+import Icon from '../Icon.astro';
+import { href } from '../../config';
+
+// Static copy rendered with set:html, so typographic characters are written as HTML entities.
+const points = [
+  'No account with us. Google sign-in talks straight to your Drive.',
+  'Backups are encrypted on your device before they leave it.',
+  'No analytics or trackers in the extension.',
+  'Notes sit in their own sealed layer, out of reach of the page&rsquo;s scripts.',
+  'Export everything as Markdown or JSON, whenever you like.',
+  'The extension&rsquo;s code is open source, so you can check what it does for yourself.',
+];
+---
+<section id="privacy" class="wrap">
+  <div class="panel">
+    <div class="lede">
+      <div class="kicker">Privacy</div>
+      <h2 class="h2">We don&rsquo;t have a database. That&rsquo;s the feature.</h2>
+      <p>Your notes live in your browser and, if you want, your Google Drive. There is no server in between to leak, sell or lose them.</p>
+      <a class="more" href={href('privacy/')}>Read the privacy policy <Icon name="arrow-right" size={14} /></a>
+    </div>
+    <ul data-arrive>
+      {points.map((t, i) => <li style={`--i:${i}`}><Icon name="check" color="var(--color-accent-700)" /><span set:html={t} /></li>)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  section { padding-top: 120px; }
+  .panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 56px;
+    padding: 48px clamp(24px, 4vw, 56px);
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+  }
+  .lede { display: flex; flex-direction: column; gap: 18px; }
+  p { margin: 0; font-size: 15px; line-height: 1.65; text-wrap: pretty; }
+  .more {
+    font: 600 17px/1.2 var(--font-heading);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color 0.15s, text-underline-offset 0.18s, transform 0.1s;
+  }
+  .more :global(svg) { transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
+  .more:hover, .more:focus-visible { text-underline-offset: 6px; }
+  .more:hover :global(svg), .more:focus-visible :global(svg) { transform: translateX(5px); }
+  .more:active { transform: translateY(1px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .more, .more :global(svg) { transition: none; }
+    .more:active { transform: none; }
+  }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-divider);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  li:last-child { border-bottom: 0; }
+  li :global(svg) { flex: none; margin-top: 3px; }
+
+  /* Arrival: rows rise 110ms apart and each tick draws just after its row. */
+  :global(.has-arrivals) ul:not(.is-in) li { opacity: 0; }
+  ul.is-in li { animation: arrive-rise 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i) * 110ms) backwards; }
+  ul.is-in li :global(svg path) {
+    stroke-dasharray: 1;
+    animation: arrive-draw 0.25s ease-out calc(var(--i) * 110ms + 150ms) backwards;
+  }
+</style>
