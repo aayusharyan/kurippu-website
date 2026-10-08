@@ -1,0 +1,224 @@
+/* Site-wide rules layered on top of the Classical design system (classical.css). */
+
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--color-bg); }
+a { color: var(--color-accent-700); }
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+
+/* Platform-specific key labels. A blocking script in <head> adds .mac to <html>. */
+html:not(.mac) [data-mac],
+html.mac [data-pc] { display: none; }
+
+/* - shared page furniture - */
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-inline: clamp(20px, 5vw, 64px);
+}
+
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
+.h2 {
+  margin: 0;
+  font: 400 clamp(36px, 4.6vw, 56px)/1.04 var(--font-heading);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.h2-sub {
+  margin: 0;
+  font: 400 clamp(32px, 3.8vw, 44px)/1.06 var(--font-heading);
+  letter-spacing: -0.01em;
+}
+
+.section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 640px;
+}
+
+.prose {
+  margin: 0;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.mono { font-family: ui-monospace, Menlo, monospace; }
+.tnum { font-feature-settings: 'tnum'; }
+
+/* Keycap */
+.kbd {
+  padding: 2px 8px;
+  border: 1px solid var(--color-neutral-400);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font: 12px ui-monospace, Menlo, monospace;
+}
+.kbd-lg {
+  padding: 8px 14px;
+  border-bottom-width: 3px;
+  border-radius: 4px;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+/* Logo tile (also the toolbar icon in mocks) */
+.tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  background: oklch(0.89 0.065 85);
+  color: var(--color-neutral-900);
+}
+.tile svg { display: block; }
+
+/* Browser window mock */
+.browser {
+  border: 1px solid var(--color-divider);
+  border-radius: 7px;
+  background: #fdfdfc;
+  overflow: hidden;
+}
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-surface);
+}
+.browser-dots { display: flex; gap: 6px; }
+.browser-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-neutral-400);
+}
+.browser-url {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 12px;
+  border-radius: 12px;
+  background: var(--color-bg);
+  font: 12px system-ui, sans-serif;
+  color: var(--color-neutral-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Native-looking context menu (static illustration and the live demo menu) */
+.ctx {
+  background: #fbfbfb;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  padding: 5px 0;
+  font: 13px/1 system-ui, -apple-system, sans-serif;
+  color: #222;
+}
+.ctx-item { padding: 6px 14px; }
+.ctx-item.is-dim { color: #999; }
+.ctx-sep { height: 1px; background: #e2e2e2; margin: 5px 0; }
+.ctx-hot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 8px);
+  margin: 0 4px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: #e8e6e3;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+button.ctx-hot { cursor: pointer; }
+
+/* - small states: hover and press responses -
+   Ink moves left to right on hover; anything pressable sinks on press. */
+.btn {
+  background-image: linear-gradient(var(--btn-tint, transparent), var(--btn-tint, transparent));
+  background-repeat: no-repeat;
+  background-position: left;
+  background-size: 0% 100%;
+  transition: background-size 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.1s;
+}
+.btn-primary { --btn-tint: color-mix(in srgb, var(--color-accent) 14%, transparent); }
+.btn-secondary { --btn-tint: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-ghost { --btn-tint: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+/* Classical sets a flat hover fill with the background shorthand; these replace it with the wipe. */
+.btn-primary:hover, .btn-secondary:hover, .btn-ghost:hover,
+.btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-ghost:focus-visible {
+  background: linear-gradient(var(--btn-tint), var(--btn-tint)) left / 100% 100% no-repeat;
+}
+.btn-primary:active, .btn-secondary:active, .btn-ghost:active {
+  background: linear-gradient(var(--btn-tint), var(--btn-tint)) left / 100% 100% no-repeat var(--btn-tint);
+  transform: translateY(1px) scale(0.985);
+}
+
+/* Plain text links (everything that isn't a .btn): the colour warms and the underline loosens on
+   hover and keyboard focus, then darkens while pressed. :where() keeps the specificity low, so a
+   component's own treatment (nav, logo, .more, footer) overrides it, and .btn links keep their
+   own colours instead of being recoloured on hover. */
+a:where(:not(.btn)) {
+  transition: color 0.15s, text-underline-offset 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+a:where(:not(.btn)):hover,
+a:where(:not(.btn)):focus-visible { color: var(--color-accent-600); text-underline-offset: 5px; }
+a:where(:not(.btn)):active { color: var(--color-accent-800); }
+
+/* "← Back" links on the privacy page and the 404 page: the arrow leads the way on hover. */
+.back {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  transition: color 0.15s, text-underline-offset 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.1s;
+}
+.back .arrow {
+  display: inline-block;
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+.back:hover .arrow, .back:focus-visible .arrow { transform: translateX(-5px); }
+.back:active { transform: translateY(1px); }
+
+/* Keycaps press one after the other when their row is hovered. */
+.kbd { --kbd-depth: 2px; }
+.kbd-lg { --kbd-depth: 3px; }
+.kbd-row:hover .kbd { animation: kbd-press 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.kbd-row:hover .kbd ~ .kbd { animation-delay: 0.16s; }
+@keyframes kbd-press {
+  35%, 65% {
+    transform: translateY(calc(var(--kbd-depth) - 1px));
+    border-bottom-width: 1px;
+    margin-bottom: calc(var(--kbd-depth) - 1px);
+    background: var(--color-accent-100);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn:active { transform: none; }
+  a:where(:not(.btn)), .back, .back .arrow { transition: none; }
+  .back:active { transform: none; }
+  .kbd-row:hover .kbd { animation: none; }
+}
+
+/* - arrivals: shared keyframes; each section applies them in its own styles (see scripts/arrivals.ts) - */
+@keyframes arrive-draw { from { stroke-dashoffset: 1; } }
+@keyframes arrive-rise { from { opacity: 0; transform: translateY(8px); } }
+
+/* - note count: shared keyframes (header chip, install ring) - */
+@keyframes count-bump { 40% { transform: scale(1.12); } }
+@keyframes count-roll { from { opacity: 0; transform: translateY(9px); } }
+/* One beat of a count-down: shorter and gentler than count-roll, because they fire ~45ms apart. */
+@keyframes count-tick { from { opacity: 0.35; transform: translateY(6px); } }
+@keyframes cta-ring { from { opacity: 0.8; transform: none; } to { opacity: 0; transform: scale(1.25, 1.7); } }
