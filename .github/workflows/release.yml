@@ -103,7 +103,14 @@ jobs:
         run: npm run check
 
       - name: Build site
-        run: npm run build
+        env:
+          PUBLIC_GOOGLE_ANALYTICS_ID: ${{ vars.GOOGLE_ANALYTICS_ID }}
+        run: |
+          if [[ ! "$PUBLIC_GOOGLE_ANALYTICS_ID" =~ ^G-[A-Za-z0-9]+$ ]]; then
+            echo 'The GOOGLE_ANALYTICS_ID repository variable must be a valid GA4 measurement ID.' >&2
+            exit 1
+          fi
+          npm run build
 
       - name: Package site
         id: package
