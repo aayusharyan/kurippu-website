@@ -1,0 +1,86 @@
+---
+import '../styles/fonts.css';
+import '../styles/classical.css';
+import '../styles/global.css';
+import AnalyticsConsent from '../components/AnalyticsConsent.astro';
+import { GOOGLE_ANALYTICS_ID, href } from '../config';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Social preview image: a 1200x630 file in public/, for example 'og-404.png'. Defaults to the home image. */
+  image?: string;
+  /** Alt text for `image`. Required in practice whenever a page passes its own `image`. */
+  imageAlt?: string;
+  /** Set false on a page that is served at many URLs (the 404 page): it has no canonical URL of its own. */
+  canonical?: boolean;
+  /** schema.org structured data for this page, written into a JSON-LD script. */
+  jsonLd?: Record<string, unknown>;
+}
+const DEFAULT_IMAGE = 'og-home.png';
+const DEFAULT_IMAGE_ALT = 'The headline “Stick a note on any website.” beside three sticky notes, one reading “Hello, I’m a note.”';
+const { title, description, image = DEFAULT_IMAGE, imageAlt: imageAltProp, canonical = true, jsonLd } = Astro.props;
+// The default image's alt text only belongs to the default image.
+const imageAlt = imageAltProp ?? (image === DEFAULT_IMAGE ? DEFAULT_IMAGE_ALT : undefined);
+// Astro owns the environment mode. Development always shows the consent UI but receives no
+// measurement ID, so UI work cannot accidentally send analytics.
+const isDevelopment = import.meta.env.DEV;
+const analyticsId = import.meta.env.PROD ? GOOGLE_ANALYTICS_ID ?? '' : '';
+// Link-preview crawlers need absolute URLs, which only exist once `site` is set in
+// astro.config.mjs. Until then the image and URL tags are left out rather than emitted broken.
+const imageUrl = Astro.site ? new URL(href(image), Astro.site).href : undefined;
+const pageUrl = canonical && Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kurippu" />
+    {pageUrl && (
+      <>
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:url" content={pageUrl} />
+      </>
+    )}
+    {imageUrl && (
+      <>
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+        {/* The large card reuses og:image, og:title and og:description; this is the one tag X has no Open Graph fallback for. */}
+        <meta name="twitter:card" content="summary_large_image" />
+        {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
+      </>
+    )}
+    <meta name="theme-color" content="#f3f2f2" />
+    <!-- Data, not code: nothing runs and nothing is requested. set:html is safe here because the
+         object is written by us in the page's frontmatter, never from visitor input; "<" is
+         escaped so the JSON cannot close the script tag. -->
+    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
+    <link rel="icon" type="image/svg+xml" href={href('favicon.svg')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={href('favicon-32.png')} />
+    <link rel="icon" type="image/png" sizes="16x16" href={href('favicon-16.png')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={href('apple-touch-icon.png')} />
+    <!-- Platform check for modifier-key labels (⌘ on Apple, Ctrl elsewhere). Blocking, so the right
+         label is there on first paint. This is the one place the platform is detected: Key.astro
+         shows the label through CSS and scripts/notes/board.ts reads the class. -->
+    <script is:inline>
+      (function () {
+        var data = navigator.userAgentData;
+        var platform = (data && data.platform) || navigator.platform || navigator.userAgent || '';
+        if (/mac|iphone|ipad/i.test(platform)) document.documentElement.classList.add('mac');
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+    {(isDevelopment || analyticsId) && <AnalyticsConsent measurementId={analyticsId} isDevelopment={isDevelopment} />}
+  </body>
+</html>
