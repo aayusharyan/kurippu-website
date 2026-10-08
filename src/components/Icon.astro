@@ -1,0 +1,14 @@
+---
+// Lucide icons used on the site, inlined.
+import { ICONS, type IconName } from '../scripts/icons';
+
+interface Props {
+  name: IconName;
+  size?: number;
+  stroke?: number;
+  color?: string;
+  class?: string;
+}
+const { name, size = 16, stroke = 2, color = 'currentColor', class: cls } = Astro.props;
+---
+<svg class={cls} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width={stroke} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONS[name]} />
