@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "source": "**/*.txt",
+        "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+      }
+    ]
+  }
+}
