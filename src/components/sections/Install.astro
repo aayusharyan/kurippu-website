@@ -1,0 +1,55 @@
+---
+import { EXTENSION_REPOSITORY_URL, INSTALL_URL, NEW_TAB } from '../../config';
+---
+<section id="install" class="wrap install">
+  <!-- One paper chip per note on the page; filled in by the notes island (scripts/notes/board.ts). -->
+  <div class="stack" data-note-stack aria-hidden="true"></div>
+  <h2>Go stick something.</h2>
+  <a class="btn btn-primary big" href={INSTALL_URL} data-install-cta data-analytics-event="select_content" data-analytics-placement="install">Add Kurippu to Chrome</a>
+  <div class="fines">
+    <div class="fine" data-note-fine>Also installs on Edge and Brave from the Chrome Web Store.</div>
+    <div class="fine">Free and open source. <a href={EXTENSION_REPOSITORY_URL} {...NEW_TAB}>Read the code on GitHub</a>.</div>
+  </div>
+</section>
+
+<style>
+  .install {
+    padding-top: 140px;
+    padding-bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+  }
+  h2 {
+    margin: 0;
+    font: 400 clamp(48px, 7vw, 88px)/1 var(--font-heading);
+    letter-spacing: -0.02em;
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 6px;
+    min-height: 30px;
+    max-width: 560px;
+  }
+  .big { position: relative; font-size: 18px; padding: 14px 28px; }
+  /* One ring when the visitor's fifth note lands. */
+  .big.is-ringing::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 1.5px solid var(--color-accent);
+    border-radius: inherit;
+    pointer-events: none;
+    animation: cta-ring 0.7s ease-out 0.2s backwards;
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .big.is-ringing::after { animation: none; }
+  }
+  .fines { display: flex; flex-direction: column; gap: 6px; }
+  .fine { font-size: 13px; color: var(--color-neutral-700); }
+</style>
