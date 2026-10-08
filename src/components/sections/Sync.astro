@@ -1,0 +1,83 @@
+<section id="sync" class="wrap sync">
+  <div class="section-head">
+    <div class="kicker">Sync &amp; backup</div>
+    <h2 class="h2">Your notes, wherever you work.</h2>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <h3>Browser sync, out of the box</h3>
+      <p class="prose">Signed into your browser? Then your notes already sync to your other computers - nothing to set up. Browsers give each extension 100 KB of sync space, which is roughly 250 short notes.</p>
+      <div class="meter" data-arrive>
+        <div class="meter-row tnum"><span>Browser sync space</span><span><span data-count>72</span> of 100 KB</span></div>
+        <div class="bar" role="img" aria-label="About 72% of 100 KB used"><div class="used"></div><div class="free"></div></div>
+        <div class="meter-row muted"><span>your notes</span><span>room to spare</span></div>
+      </div>
+    </div>
+    <div class="col">
+      <h3>Google Drive, for everything else</h3>
+      <p class="prose">When sync fills up - or just for peace of mind - sign in with Google. Kurippu keeps one encrypted file in a hidden app folder: it won&rsquo;t clutter your Drive and can&rsquo;t see your other files.</p>
+      <dl>
+        <div><dt class="kicker">Lives in</dt><dd>Your own Google Drive, in a hidden app folder</dd></div>
+        <div><dt class="kicker">Backed up as</dt><dd>One encrypted file, with no size limit</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sync {
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .sync .h2 { text-wrap: wrap; }
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 56px;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 32px;
+  }
+  .col { display: flex; flex-direction: column; gap: 16px; }
+  h3 { margin: 0; font: 600 26px/1.2 var(--font-heading); letter-spacing: normal; }
+  .prose { font-size: 15px; line-height: 1.65; }
+  .meter { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; }
+  .meter-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-neutral-800);
+  }
+  .meter-row.muted { color: var(--color-neutral-700); }
+  .bar {
+    height: 8px;
+    border: 1px solid var(--color-divider);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+  }
+  .used { width: 72%; background: var(--color-accent-300); }
+  .meter.is-in .used { transition: width 1.1s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  /* Empty until the meter scrolls into view; the hatched remainder takes up the slack. */
+  :global(.has-arrivals) .meter:not(.is-in) .used { width: 0; }
+  .free { flex: 1; background: repeating-linear-gradient(135deg, transparent 0 4px, var(--color-accent-200) 4px 6px); }
+  /* A ruled ledger: each row pairs a small kicker label with a full-size value, so label and value read as different levels. */
+  dl {
+    margin: 6px 0 0;
+    border-top: 1px solid var(--color-divider);
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    column-gap: 20px;
+    align-items: baseline;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--color-divider);
+  }
+  dd { margin: 0; font-size: 15px; line-height: 1.5; }
+  /* Too narrow for two columns: the label sits above its value. */
+  @media (max-width: 480px) {
+    dl > div { grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
+  }
+</style>
