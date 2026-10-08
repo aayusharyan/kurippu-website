@@ -1,6 +1,6 @@
 ---
 import Logo from '../Logo.astro';
-import { href } from '../../config';
+import { INSTALL_URL, href } from '../../config';
 ---
 <header id="top" class="wrap">
   <Logo />
@@ -19,7 +19,7 @@ import { href } from '../../config';
       <span>on this page</span>
     </span>
   </span>
-  <a class="btn btn-primary" href="#install" data-analytics-event="select_content" data-analytics-placement="header">Add Kurippu to Chrome</a>
+  <a class="btn btn-primary" href={INSTALL_URL} data-analytics-event="select_content" data-analytics-placement="header">Add Kurippu to Chrome</a>
 </header>
 
 <style>
