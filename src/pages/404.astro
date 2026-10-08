@@ -1,0 +1,144 @@
+---
+// Served by the host for any unknown URL (Firebase Hosting uses dist/404.html), so every link and
+// asset here must be root-relative: use href(), never a path relative to the page.
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { CHROME_STORE_LISTING, EXTENSION_REPOSITORY_URL, href } from '../config';
+---
+<Base
+  title="Kurippu - Page not found"
+  description="This page doesn&rsquo;t exist, or it has moved. Kurippu is a free, open-source Chrome extension for sticking notes on any website."
+  canonical={false}
+  image="og-404.png"
+  imageAlt="The Tamil word குறிப்பு (a note) beside the Japanese word クリップ (a clip), with the line &ldquo;A note, clipped to a page.&rdquo;"
+>
+  <div class="site">
+    <header class="wrap">
+      <Logo to={href()} />
+      <a class="back" href={href()}><span class="arrow" aria-hidden="true">&larr;</span><span class="label">Back to the site</span></a>
+    </header>
+
+    <main>
+      <div class="wrap content">
+        <div class="kicker">Page not found</div>
+
+        <!-- Decorative: the heading below carries the meaning. -->
+        <div class="numerals" aria-hidden="true">
+          <div class="digits">404</div>
+          <svg viewBox="0 0 84 12" fill="none"><path d="M2 8 C 18 2, 32 11, 48 6 S 72 3, 82 7" pathLength="1" /></svg>
+          <div class="note">
+            <div class="band"></div>
+            <div class="body"><b>Nothing stuck here.</b><br />Yet.</div>
+          </div>
+        </div>
+
+        <h1>This page doesn&rsquo;t exist, or it has moved.</h1>
+        <p class="lead">Here&rsquo;s a good place to start.</p>
+        <a class="btn btn-primary big" href={href()}>Back to the homepage</a>
+      </div>
+    </main>
+
+    <SiteFooter links={[{ label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: EXTENSION_REPOSITORY_URL, newTab: true }, ...(CHROME_STORE_LISTING ? [{ label: 'Chrome Web Store', href: CHROME_STORE_LISTING }] : [])]} />
+  </div>
+</Base>
+
+<style>
+  .site {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* The sticky note hangs past the numerals; keep it from adding a horizontal scrollbar on phones. */
+    overflow-x: clip;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+  /* .wrap's auto margins stop a flex item stretching, so ask for the full width. */
+  header {
+    width: 100%;
+    padding-block: 22px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .back { margin-left: auto; font-size: 14px; }
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .content {
+    width: 100%;
+    padding-top: 32px;
+    padding-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 22px;
+  }
+
+  .numerals { position: relative; display: inline-block; padding-bottom: 14px; }
+  .digits {
+    font: 400 clamp(130px, 21vw, 250px)/0.85 var(--font-heading);
+    letter-spacing: -0.03em;
+  }
+  /* Hand-drawn underline, drawn the same way as the hero's. */
+  .numerals svg {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 52%;
+    transform: translateX(-50%);
+    aspect-ratio: 84 / 12;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .numerals path {
+    stroke: var(--color-mark);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .numerals path { animation: arrive-draw 0.6s ease-out 0.3s backwards; }
+  }
+
+  /* Same paper as the demo's notes (see styles/notes.css), hung off the last digit. */
+  .note {
+    position: absolute;
+    top: -6px;
+    right: clamp(-70px, -5vw, -24px);
+    width: clamp(128px, 15vw, 188px);
+    background: oklch(0.93 0.05 85);
+    box-shadow: var(--shadow-md);
+    border-radius: 2px;
+    transform: rotate(5deg);
+    text-align: left;
+  }
+  .band { height: 22px; background: oklch(0.89 0.065 85); border-radius: 2px 2px 0 0; }
+  .body { padding: 10px 14px 14px; font-size: 14px; line-height: 1.5; }
+  .body b { font-weight: 600; }
+
+  /* Narrow screens: bigger digits, and the note rides above them so "404" stays readable. */
+  @media (max-width: 760px) {
+    .numerals { margin-top: 56px; }
+    .digits { font-size: 168px; }
+    .note { top: -66px; right: -18px; width: 124px; }
+    .band { height: 18px; }
+    .body { padding: 8px 11px 11px; font-size: 12.5px; }
+  }
+
+  h1 {
+    margin: 0;
+    font: 400 clamp(32px, 3.8vw, 44px)/1.06 var(--font-heading);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .lead { margin: 0; font-size: 17px; line-height: 1.6; max-width: 460px; text-wrap: pretty; }
+  .big { font-size: 18px; padding: 14px 28px; }
+</style>
