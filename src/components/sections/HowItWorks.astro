@@ -1,0 +1,91 @@
+---
+import Icon from '../Icon.astro';
+import Key from '../Key.astro';
+---
+<section id="how" class="wrap how">
+  <div class="section-head">
+    <div class="kicker">How it works</div>
+    <h2 class="h2">Three moves. You already know two of them.</h2>
+  </div>
+  <ol class="steps">
+    <li>
+      <span class="num">1</span>
+      <h3>Right-click anywhere</h3>
+      <p>Pick <i>Add sticky note here</i> from the browser’s own menu - it lives right between Print and Inspect.</p>
+      <div class="ctx menu" aria-hidden="true">
+        <div class="ctx-item">Print…</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-hot"><span class="tile mini"><Icon name="sticky-note" size={11} stroke={2.4} /></span>Add sticky note here</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item">Inspect</div>
+      </div>
+    </li>
+    <li>
+      <span class="num">2</span>
+      <h3>Or <Key /> + click</h3>
+      <p>For sites that keep right-click to themselves (looking at you, map apps). Links, buttons and text fields behave exactly as before.</p>
+      <div class="keys kbd-row"><span class="kbd kbd-lg"><Key /></span>+<span class="kbd kbd-lg">click</span></div>
+    </li>
+    <li>
+      <span class="num">3</span>
+      <h3>Write, flip, forget</h3>
+      <p>Markdown while you edit, neatly set in preview. Pick a color. Close the tab - the note will be there when you’re back.</p>
+      <div class="flip" aria-hidden="true">
+        <div class="mini-note mono">**Gift ideas**<br />- [x] Book<br />- [ ] Plant</div>
+        <Icon name="arrow-right" size={16} color="var(--color-accent-700)" />
+        <div class="mini-note rendered"><b>Gift ideas</b><br /><s>Book</s><br />Plant</div>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<style>
+  .how {
+    padding-top: 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 32px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 44px;
+    border-top: 1px solid var(--color-divider);
+  }
+  li { display: flex; flex-direction: column; gap: 14px; }
+  .num {
+    font: 400 44px/1 var(--font-heading);
+    color: var(--color-accent);
+    font-feature-settings: 'tnum';
+  }
+  h3 { margin: 0; font: 600 23px/1.2 var(--font-heading); letter-spacing: normal; }
+  p { margin: 0; font-size: 15px; line-height: 1.6; text-wrap: pretty; }
+  .menu { width: 220px; box-shadow: var(--shadow-md); }
+  .tile.mini { width: 16px; height: 16px; }
+  .keys {
+    /* Shrunk to the keycaps (margin, not padding) so only they trigger the press animation on hover. */
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0;
+    font-size: 14px;
+    color: var(--color-neutral-800);
+  }
+  .flip { display: flex; align-items: center; gap: 10px; }
+  .flip :global(svg) { flex: none; }
+  .mini-note {
+    flex: 1;
+    padding: 10px 12px;
+    background: oklch(0.93 0.05 145);
+    border-top: 6px solid oklch(0.89 0.065 145);
+    box-shadow: var(--shadow-sm);
+  }
+  .mini-note.mono { font: 11px/1.6 ui-monospace, Menlo, monospace; color: var(--color-neutral-900); }
+  .mini-note.rendered { font-size: 12px; line-height: 1.55; }
+  .rendered b { font-weight: 600; }
+  .rendered s { opacity: 0.6; }
+</style>
