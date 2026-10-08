@@ -1,0 +1,83 @@
+---
+import Logo from '../Logo.astro';
+import { href } from '../../config';
+---
+<header id="top" class="wrap">
+  <Logo />
+  <nav aria-label="Sections">
+    <a href="#how">How it works</a>
+    <a href="#sync">Sync</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#open-source">Open source</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <!-- Filled in by the notes island (scripts/notes/board.ts): every note on the page, seeds included. -->
+  <span class="count tnum" data-note-count hidden>
+    <span class="count-icon"><img src={href('favicon.svg')} width="19" height="19" alt="" /></span>
+    <span class="count-text">
+      <span class="num" data-note-count-num>0</span>
+      <span>on this page</span>
+    </span>
+  </span>
+  <a class="btn btn-primary" href="#install" data-analytics-event="select_content" data-analytics-placement="header">Add Kurippu to Chrome</a>
+</header>
+
+<style>
+  header {
+    padding-block: 22px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+  nav {
+    margin-left: auto;
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    font-size: 14px;
+  }
+  nav a {
+    color: var(--color-text);
+    text-decoration: none;
+    padding-block: 4px;
+    background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
+    transition: background-size 0.24s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.15s, transform 0.1s;
+  }
+  nav a:hover, nav a:focus-visible { color: var(--color-accent-700); background-size: 100% 1px; }
+  nav a:active { color: var(--color-accent-800); transform: translateY(1px); }
+
+  .count {
+    display: inline-flex;
+    align-items: stretch;
+    border-radius: 3px;
+    background: var(--color-accent-100);
+    color: var(--color-accent-800);
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .count[hidden] { display: none; }
+  .count-icon {
+    flex: none;
+    display: block;
+  }
+  .count-icon img {
+    display: block;
+  }
+  .count-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 10px 0 7px;
+  }
+  .count.is-bumping { animation: count-bump 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
+  .num { display: inline-block; }
+  .num.is-rolling { animation: count-roll 0.22s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .num.is-ticking { animation: count-tick 0.11s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    nav a { transition: none; }
+    nav a:active { transform: none; }
+    .count.is-bumping, .num.is-rolling, .num.is-ticking { animation: none; }
+  }
+</style>
