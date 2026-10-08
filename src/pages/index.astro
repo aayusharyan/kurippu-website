@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Header from '../components/sections/Header.astro';
+import Hero from '../components/sections/Hero.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import Survive from '../components/sections/Survive.astro';
+import Sync from '../components/sections/Sync.astro';
+import Privacy from '../components/sections/Privacy.astro';
+import OpenSource from '../components/sections/OpenSource.astro';
+import Screens from '../components/sections/Screens.astro';
+import Shortcuts from '../components/sections/Shortcuts.astro';
+import Faq from '../components/sections/Faq.astro';
+import NameOrigin from '../components/sections/NameOrigin.astro';
+import Install from '../components/sections/Install.astro';
+import { CHROME_STORE_LISTING, EXTENSION_REPOSITORY_URL, absoluteUrl, href } from '../config';
+import '../styles/notes.css';
+
+const description = 'Kurippu is a free, open-source Chrome extension for sticking notes on any website. Right-click, write, done - your note comes back exactly where you left it.';
+
+// Structured data for search engines and AI agents. Facts only, copied from this page's own copy.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Kurippu',
+  alternateName: ['குறிப்பு', 'クリップ'],
+  description,
+  url: Astro.site ? absoluteUrl(Astro.site) : undefined,
+  sameAs: EXTENSION_REPOSITORY_URL,
+  applicationCategory: 'BrowserApplication',
+  operatingSystem: 'Chrome, Microsoft Edge, Brave',
+  inLanguage: 'en',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  installUrl: CHROME_STORE_LISTING ?? undefined,
+  featureList: [
+    'Add a sticky note to any website from the right-click menu, or with Command or Ctrl + click',
+    'Notes are written in Markdown and shown formatted in preview',
+    'Each note remembers the part of the page it is stuck to and follows it when a site changes its layout',
+    'Notes sync between computers through browser sync, with nothing to set up',
+    'Optional encrypted backup to a hidden app folder in your own Google Drive',
+    'No Kurippu server or account, and no analytics or trackers in the extension',
+    'Export and import notes as Markdown or JSON',
+    'Free and open source, with the extension’s code public on GitHub',
+  ],
+};
+---
+<Base
+  title="Kurippu - sticky notes for any website"
+  description={description}
+  jsonLd={jsonLd}
+>
+  <!-- The whole page is a note surface: ⌘/Ctrl+click anywhere adds a note (see scripts/notes/board.ts). -->
+  <div class="site" data-scope="page">
+    <Header />
+    <main>
+      <Hero />
+      <HowItWorks />
+      <Survive />
+      <Sync />
+      <Privacy />
+      <OpenSource />
+      <Screens />
+      <Shortcuts />
+      <Faq />
+      <NameOrigin />
+      <Install />
+    </main>
+    <SiteFooter links={[{ label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: EXTENSION_REPOSITORY_URL, newTab: true }, ...(CHROME_STORE_LISTING ? [{ label: 'Chrome Web Store', href: CHROME_STORE_LISTING }] : [])]} />
+
+    <div class="ctx demo-menu" data-menu data-nonote role="menu" aria-label="Browser menu (demo)" hidden>
+      <div class="ctx-item is-dim">Back</div>
+      <div class="ctx-item is-dim">Reload</div>
+      <div class="ctx-item is-dim">Print</div>
+      <div class="ctx-sep"></div>
+      <button class="ctx-hot" type="button" role="menuitem" data-menu-add><span class="tile"><img src={href('favicon.svg')} width="16" height="16" alt="" /></span>Add sticky note here</button>
+      <div class="ctx-sep"></div>
+      <div class="ctx-item is-dim">Inspect</div>
+    </div>
+    <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+    <button
+      class="btn btn-primary reset-fab"
+      type="button"
+      data-reset-fab
+      data-nonote
+      title="Reset notes to default"
+      aria-label="Reset notes to default"
+      hidden
+    >
+      <Icon name="rotate-ccw" size={15} stroke={2} />
+      Reset notes
+    </button>
+  </div>
+</Base>
+
+<style>
+  .site {
+    position: relative;
+    overflow-x: clip;
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+</style>
+
+<script>
+  import { mountBoard } from '../scripts/notes/board';
+  import { mountArrivals } from '../scripts/arrivals';
+  mountBoard(document.querySelector<HTMLElement>('[data-scope="page"]')!);
+  mountArrivals();
+</script>
