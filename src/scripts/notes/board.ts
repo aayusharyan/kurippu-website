@@ -1,6 +1,6 @@
 // The live sticky-note demo: visitors add notes anywhere on the landing page.
 // Notes persist in localStorage; a FAB appears when the board differs from its seeds so visitors can reset.
-import { NoteView, type NoteApi } from './sticky';
+import { NoteView, type NoteApi } from './note';
 import { bezier, newSwing, pivotShift, release, stepSwing, type Swing } from './physics';
 import { HUES, isSeed, seeds, type Note } from './seeds';
 
