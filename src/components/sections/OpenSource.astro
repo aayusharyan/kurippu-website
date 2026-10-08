@@ -1,0 +1,70 @@
+---
+import Icon from '../Icon.astro';
+import { EXTENSION_REPOSITORY_URL, NEW_TAB } from '../../config';
+
+// Static copy rendered with set:html, so typographic characters are written as HTML entities.
+const points = [
+  ['Free, without a catch', 'No plans, no &ldquo;pro&rdquo;, no trial, no ads. There&rsquo;s no server to pay for, and no stored copy of your notes to sell.'],
+  ['Check it yourself', 'No Backend server, no analytics in the extension, and no permissions beyond the ones listed in the privacy policy. You don&rsquo;t have to believe any of it: the source is there to confirm it.'],
+  ['Yours to improve', 'Found a bug, or want a feature? Open an issue on GitHub. Want to go further? Fork it and make it your own.'],
+];
+---
+<section id="open-source" class="wrap oss">
+  <div class="section-head">
+    <div class="kicker">Open source</div>
+    <h2 class="h2">Don&rsquo;t take our word for it. Read the code.</h2>
+    <p class="prose">A privacy page is only words. Kurippu is free and open source, so anyone can see what the extension stores, what it asks your browser for and where it connects.</p>
+  </div>
+  <div class="cols">
+    {points.map(([h, t]) => (
+      <div class="col">
+        <h3>{h}</h3>
+        <p class="prose" set:html={t} />
+      </div>
+    ))}
+  </div>
+  <div class="links">
+    <a class="more" href={EXTENSION_REPOSITORY_URL} {...NEW_TAB}>Read the source on GitHub <Icon name="arrow-right" size={14} /></a>
+  </div>
+</section>
+
+<style>
+  .oss {
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .oss .h2 { text-wrap: wrap; }
+  .section-head .prose { font-size: 15px; line-height: 1.65; padding-top: 8px; }
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 56px;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 32px;
+  }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 12px; }
+  h3 { margin: 0; font: 600 26px/1.2 var(--font-heading); letter-spacing: normal; }
+  .col .prose { font-size: 15px; line-height: 1.65; }
+  .links { display: flex; flex-wrap: wrap; gap: 14px 32px; }
+  .more {
+    font: 600 17px/1.2 var(--font-heading);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color 0.15s, text-underline-offset 0.18s, transform 0.1s;
+  }
+  .more :global(svg) { transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
+  .more:hover, .more:focus-visible { text-underline-offset: 6px; }
+  .more:hover :global(svg), .more:focus-visible :global(svg) { transform: translateX(5px); }
+  .more:active { transform: translateY(1px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .more, .more :global(svg) { transition: none; }
+    .more:active { transform: none; }
+  }
+</style>
