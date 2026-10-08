@@ -1,0 +1,6 @@
+---
+// Platform-aware modifier label: ⌘/⌥ on Apple platforms, Ctrl/Alt elsewhere.
+interface Props { alt?: boolean }
+const { alt = false } = Astro.props;
+---
+<span data-mac>{alt ? <>&#8997;</> : <>&#8984;</>}</span><span data-pc>{alt ? 'Alt' : 'Ctrl'}</span>
