@@ -1,0 +1,48 @@
+<section id="name" class="wrap name">
+  <div class="kicker">About the name</div>
+  <div class="pair" data-scope="name-origin">
+    <div class="word word-ta"><span class="glyphs" lang="ta">குறிப்பு</span><span class="gloss"><i>ku&#7775;ippu</i> &middot; Tamil &middot; a note</span></div>
+    <div class="note-home" data-flow="name-origin" hidden></div>
+    <div class="word word-ja"><span class="glyphs" lang="ja">クリップ</span><span class="gloss"><i>kurippu</i> &middot; Japanese &middot; a clip</span></div>
+  </div>
+  <p>Same sound, two languages, and between them the whole idea: a note, clipped to a page.</p>
+</section>
+
+<style>
+  .name {
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .pair {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 32px;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 24px;
+  }
+  .word { display: flex; flex-direction: column; gap: 8px; }
+  .note-home {
+    position: relative;
+    width: 236px;
+    min-height: 96px;
+    justify-self: center;
+  }
+  .note-home[hidden] { display: none; }
+  @media (min-width: 620px) and (max-width: 759px) {
+    .pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .word-ja { grid-column: 2; justify-self: end; }
+    .note-home { grid-column: 1 / -1; grid-row: 2; }
+  }
+  @media (min-width: 760px) {
+    .pair { grid-template-columns: 1fr 236px 1fr; }
+    .word-ja { grid-column: 3; justify-self: end; }
+    .note-home { grid-column: 2; grid-row: 1; }
+  }
+  .glyphs { font-size: 36px; line-height: 1.2; font-weight: 400; }
+  .gloss { font-size: 14px; color: var(--color-neutral-800); }
+  p { margin: 0; text-align: center; font-size: 16px; line-height: 1.65; text-wrap: pretty; }
+</style>
