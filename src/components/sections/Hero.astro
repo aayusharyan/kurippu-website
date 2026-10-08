@@ -1,0 +1,91 @@
+---
+// Hero 1a "Margin". A live demo zone: seed notes are mounted by the notes island,
+// absolutely positioned on wide screens, flowed into the row below the copy under 1180px.
+import Key from '../Key.astro';
+import { INSTALL_URL } from '../../config';
+---
+<section id="hero" class="wrap hero" data-scope="hero-a" data-demo>
+  <div class="copy">
+    <div class="kicker">Free, open-source Chrome extension · works on any website</div>
+    <h1>Stick a note on <span class="any"><em>any</em><svg viewBox="0 0 84 12" fill="none" aria-hidden="true"><path d="M2 8 C 18 2, 32 11, 48 6 S 72 3, 82 7" pathLength="1" /></svg></span> website.</h1>
+    <p class="lead">Right-click, write, done. Your note comes back exactly where you left it - next visit, next week, on your other laptop.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href={INSTALL_URL} data-analytics-event="select_content" data-analytics-placement="hero">Add Kurippu to Chrome</a>
+      <a class="btn btn-secondary" href="#how">See how it works</a>
+    </div>
+    <div class="hint">
+      <!-- Only the keycaps are the hover target for their press animation, not the sentence after them. -->
+      <span class="keys kbd-row"><span class="kbd"><Key /></span>+<span class="kbd">click</span></span>
+      <span>anywhere on this page. Yes, anywhere.</span>
+    </div>
+  </div>
+  <div class="flow" data-flow="hero-a" hidden></div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-top: 64px;
+    padding-bottom: 110px;
+    min-height: 640px;
+  }
+  .copy {
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  h1 {
+    margin: 0;
+    font: 400 clamp(52px, 7.4vw, 96px)/0.96 var(--font-heading);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  /* Hand-drawn underline. The stroke is sized in the SVG's own units, so it scales with the headline. */
+  .any { position: relative; display: inline-block; }
+  .any svg {
+    position: absolute;
+    left: -0.05em;
+    bottom: 0.03em;
+    width: calc(100% + 0.1em);
+    aspect-ratio: 84 / 12;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .any path {
+    stroke: var(--color-mark);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .any path { animation: arrive-draw 0.5s ease-out 0.35s backwards; }
+  }
+  .lead {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 500px;
+    text-wrap: pretty;
+  }
+  .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--color-neutral-800);
+    padding-top: 20px;
+    border-top: 1px solid var(--color-divider);
+    max-width: 500px;
+  }
+  .keys { display: inline-flex; align-items: center; gap: 8px; }
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .flow[hidden] { display: none; }
+</style>
