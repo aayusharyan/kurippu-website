@@ -1,0 +1,198 @@
+---
+import { href } from '../config';
+
+interface Props {
+  measurementId: string;
+  isDevelopment: boolean;
+}
+const { measurementId, isDevelopment } = Astro.props;
+---
+<aside
+  class="consent"
+  data-analytics-consent
+  data-measurement-id={measurementId}
+  data-development={String(isDevelopment)}
+  data-tracking-enabled={String(!isDevelopment && !!measurementId)}
+  role="dialog"
+  aria-labelledby="analytics-consent-title"
+  hidden
+>
+  <div class="copy">
+    <h2 id="analytics-consent-title">Optional analytics</h2>
+    <p>May we use Google Analytics cookies to understand how visitors find and use this website? Your page views and clicks, such as Add to Chrome, are sent to Google. The extension has no analytics.</p>
+    <a href={href('privacy/')}>Read the privacy policy</a>
+  </div>
+  <div class="actions">
+    <button class="btn btn-secondary" type="button" data-analytics-decline>Decline</button>
+    <button class="btn btn-primary" type="button" data-analytics-accept>Allow analytics</button>
+  </div>
+</aside>
+
+<style>
+  .consent {
+    position: fixed;
+    z-index: 10000;
+    left: clamp(16px, 3vw, 32px);
+    bottom: clamp(16px, 3vw, 32px);
+    width: min(410px, calc(100vw - 32px));
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-body);
+  }
+  .consent[hidden] { display: none; }
+  .consent.is-visible { animation: consent-in 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
+  .consent.is-leaving {
+    animation: consent-out 0.16s ease-in both;
+    pointer-events: none;
+  }
+  .copy { display: flex; flex-direction: column; gap: 6px; }
+  h2 { margin: 0; font: 600 20px/1.2 var(--font-heading); }
+  p { margin: 0; font-size: 12px; line-height: 1.55; }
+  a { align-self: flex-start; font-size: 12px; }
+  .actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+  .actions .btn { padding: 7px 11px; font-size: 13px; }
+
+  @keyframes consent-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  }
+  @keyframes consent-out {
+    to { opacity: 0; transform: translateY(7px) scale(0.985); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .consent.is-visible, .consent.is-leaving { animation: none; }
+  }
+</style>
+
+<script>
+  const CONSENT_KEY = 'kurippu-site-google-analytics-consent-v1';
+  type Choice = 'accepted' | 'declined';
+  type Gtag = (...args: unknown[]) => void;
+  type AnalyticsWindow = Window & { dataLayer?: unknown[][]; gtag?: Gtag };
+
+  const panel = document.querySelector<HTMLElement>('[data-analytics-consent]');
+  const accept = panel?.querySelector<HTMLButtonElement>('[data-analytics-accept]');
+  const decline = panel?.querySelector<HTMLButtonElement>('[data-analytics-decline]');
+  const settings = document.querySelectorAll<HTMLButtonElement>('[data-analytics-settings]');
+  const measurementId = panel?.dataset.measurementId;
+  const isDevelopment = panel?.dataset.development === 'true';
+  const trackingEnabled = panel?.dataset.trackingEnabled === 'true';
+  let hideSequence = 0;
+
+  const readChoice = (): Choice | null => {
+    try {
+      const value = localStorage.getItem(CONSENT_KEY);
+      return value === 'accepted' || value === 'declined' ? value : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeChoice = (choice: Choice) => {
+    try { localStorage.setItem(CONSENT_KEY, choice); } catch {}
+  };
+
+  const configureAnalytics = () => {
+    if (!trackingEnabled || !measurementId || document.querySelector('[data-google-analytics-script]')) return;
+    const analyticsWindow = window as AnalyticsWindow;
+    analyticsWindow.dataLayer ||= [];
+    analyticsWindow.gtag ||= (...args: unknown[]) => { analyticsWindow.dataLayer?.push(args); };
+    analyticsWindow.gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+    });
+    analyticsWindow.gtag('consent', 'update', { analytics_storage: 'granted' });
+    analyticsWindow.gtag('set', {
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false,
+    });
+    analyticsWindow.gtag('js', new Date());
+    analyticsWindow.gtag('config', measurementId);
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.dataset.googleAnalyticsScript = '';
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+    document.head.append(script);
+  };
+
+  const showPanel = () => {
+    if (!panel) return;
+    hideSequence += 1;
+    panel.hidden = false;
+    panel.classList.remove('is-visible', 'is-leaving');
+    // Reflow lets the entrance animation replay when Privacy choices reopens the panel.
+    void panel.offsetWidth;
+    panel.classList.add('is-visible');
+  };
+
+  const hidePanel = (after?: () => void) => {
+    if (!panel || panel.hidden) {
+      after?.();
+      return;
+    }
+    const sequence = ++hideSequence;
+    const finish = () => {
+      if (sequence !== hideSequence) return;
+      panel.hidden = true;
+      panel.classList.remove('is-visible', 'is-leaving');
+      after?.();
+    };
+    panel.classList.remove('is-visible');
+    panel.classList.add('is-leaving');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
+    else panel.addEventListener('animationend', finish, { once: true });
+  };
+
+  if (isDevelopment) showPanel();
+  else if (readChoice() === 'accepted') configureAnalytics();
+  else if (readChoice() === null) showPanel();
+
+  settings.forEach((button) => button.addEventListener('click', showPanel));
+  accept?.addEventListener('click', () => {
+    if (isDevelopment) {
+      hidePanel();
+      return;
+    }
+    writeChoice('accepted');
+    hidePanel();
+    configureAnalytics();
+  });
+  decline?.addEventListener('click', () => {
+    if (isDevelopment) {
+      hidePanel();
+      return;
+    }
+    const wasAccepted = readChoice() === 'accepted';
+    writeChoice('declined');
+    if (wasAccepted) {
+      (window as AnalyticsWindow).gtag?.('consent', 'update', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+      });
+      hidePanel(() => location.reload());
+    } else hidePanel();
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+    const target = event.target.closest<HTMLElement>('[data-analytics-event]');
+    const eventName = target?.dataset.analyticsEvent;
+    if (!eventName) return;
+    (window as AnalyticsWindow).gtag?.('event', eventName, {
+      content_type: 'install_cta',
+      content_id: target?.dataset.analyticsPlacement || 'unknown',
+    });
+  });
+</script>
