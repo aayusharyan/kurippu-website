@@ -1,0 +1,48 @@
+---
+import { GOOGLE_ANALYTICS_ID, NEW_TAB, SITE_VERSION } from '../config';
+
+interface Props { links: { label: string; href: string; newTab?: boolean }[] }
+const { links } = Astro.props;
+const hasAnalyticsChoices = import.meta.env.DEV || !!GOOGLE_ANALYTICS_ID;
+// Evaluated at build time (static output), so the year is the year of the deploy.
+const year = new Date().getFullYear();
+---
+<footer>
+  <div class="wrap row">
+    {links.map((l) => <a href={l.href} {...(l.newTab ? NEW_TAB : {})}>{l.label}</a>)}
+    {hasAnalyticsChoices && <button type="button" data-analytics-settings>Analytics settings</button>}
+    <span class="copy">&copy; {year} Kurippu ({SITE_VERSION})</span>
+  </div>
+</footer>
+
+<style>
+  footer { border-top: 1px solid var(--color-divider); }
+  .row {
+    padding-block: 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--color-neutral-800);
+  }
+  .row a, button { transition: color 0.15s, text-underline-offset 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.1s; }
+  .row a:active, button:active { transform: translateY(1px); }
+  button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-accent-700);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  button:hover, button:focus-visible { color: var(--color-accent-600); text-underline-offset: 5px; }
+  .copy { margin-left: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row a, button { transition: none; }
+    .row a:active, button:active { transform: none; }
+  }
+</style>
