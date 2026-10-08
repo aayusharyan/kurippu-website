@@ -1,0 +1,24 @@
+{
+  "name": "kurippu-site",
+  "description": "Landing page and privacy policy for Kurippu, a Chrome extension for sticking notes on any website.",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^7.3.6"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  }
+}
