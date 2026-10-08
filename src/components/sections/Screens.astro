@@ -1,0 +1,240 @@
+---
+// Static mocks of the toolbar popup and the options page. Both are still being designed, so a seed note
+// ("w1" in scripts/notes/seeds.ts) is pinned to this section to say so; the <noscript> line covers no-JS visitors.
+import Icon from '../Icon.astro';
+import { href } from '../../config';
+
+const dot = (h: number) => `background:oklch(0.82 0.09 ${h})`;
+const paper = (h: number) => `background:oklch(0.93 0.05 ${h});border-top-color:oklch(0.89 0.065 ${h})`;
+
+const onPage = [
+  { hue: 85, text: 'Team was $12 last month', age: '2d', active: true },
+  { hue: 145, text: 'SSO is an add-on, not included', age: '2d' },
+  { hue: 235, text: 'Refunds within 30 days', age: '5w' },
+];
+const sidebar = [
+  { label: 'All notes', count: 214, active: true },
+  { label: 'Sites', count: 38 },
+  { label: '#research', count: 24 },
+  { label: '#recipes', count: 6 },
+];
+---
+<section id="screens" class="wrap screens" data-scope="screens">
+  <div class="section-head">
+    <div class="kicker">Finding notes again</div>
+    <h2 class="h2">Two more places your notes live.</h2>
+    <noscript><p class="status">Mockups. The extension is still being built, so the finished screens may look different.</p></noscript>
+  </div>
+  <div class="flow" data-flow="screens" hidden></div>
+  <div class="row">
+    <figure class="popup-col">
+      <div class="popup" aria-hidden="true">
+        <div class="popup-head">
+          <span class="tile"><img src={href('favicon.svg')} width="22" height="22" alt="" /></span>
+          <span class="popup-word">Kurippu</span>
+          <span class="popup-site">plans.yush.dev</span>
+        </div>
+        <div class="label tnum pad-top">On this page &middot; 3</div>
+        <div class="list">
+          {onPage.map((n) => (
+            <div class:list={['item', { active: n.active }]}>
+              <span class="dot" style={dot(n.hue)}></span>
+              <span class="text">{n.text}</span>
+              <span class="age tnum">{n.age}</span>
+            </div>
+          ))}
+        </div>
+        <div class="label tnum">Couldn&rsquo;t place &middot; 1</div>
+        <div class="item lost">
+          <span class="dot" style={dot(20)}></span>
+          <span class="text">Old checkout button was here</span>
+          <span class="place">Place</span>
+        </div>
+        <div class="popup-foot"><Icon name="check" size={12} />Synced &middot; 2 min ago</div>
+      </div>
+      <figcaption class="cap">
+        <h3>The toolbar popup</h3>
+        <p>Every note on the page you&rsquo;re on - click one to jump to it. Notes that lost their spot wait here to be placed. Sharing your screen? One switch hides every note.</p>
+      </figcaption>
+    </figure>
+
+    <figure class="options-col">
+      <div class="options" aria-hidden="true">
+        <div class="side tnum">
+          <div class="side-word">Kurippu</div>
+          {sidebar.map((s) => (
+            <div class:list={['side-item', { active: s.active }]}><span>{s.label}</span><span class="count">{s.count}</span></div>
+          ))}
+        </div>
+        <div class="main">
+          <div class="main-head">
+            <span class="main-title">All notes</span>
+            <span class="search"><Icon name="search" size={13} />Search notes, sites, tags</span>
+          </div>
+          <div class="filters">
+            <div class="seg-mock"><span class="on">By site</span><span>Timeline</span></div>
+            <div class="swatches">{[85, 145, 235, 20, 305].map((h) => <span style={dot(h)}></span>)}</div>
+            <span class="export">Export</span>
+          </div>
+          <div class="rule"></div>
+          <div class="site-head"><span class="site-name">brew.yush.dev</span><span class="site-count tnum">3 notes</span></div>
+          <div class="cards">
+            <div class="card-note" style={paper(145)}><b>1:16, not 1:15.</b> Trust the scale.</div>
+            <div class="card-note" style={paper(20)}>Buy a gooseneck kettle</div>
+            <div class="card-note lost" style={paper(235)}>Rinse the filter first - not placed</div>
+          </div>
+        </div>
+      </div>
+      <figcaption class="cap wide">
+        <h3>The everything page</h3>
+        <p>All your notes, by site or by date. Search them, filter by color or #tag, and export or import in bulk.</p>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .screens {
+    position: relative;
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  /* Where the in-development note sits under 1180px, in the flow instead of floating beside the heading. */
+  .flow { display: flex; flex-wrap: wrap; gap: 24px; }
+  .flow[hidden] { display: none; }
+  .status { margin: 0; max-width: 520px; font-size: 14px; line-height: 1.6; font-style: italic; color: var(--color-neutral-700); text-wrap: pretty; }
+  .row { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; }
+  figure { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .popup-col { flex: 0 1 340px; }
+  .options-col { flex: 1 1 520px; }
+
+  .cap { display: flex; flex-direction: column; gap: 6px; max-width: 340px; margin: 0; color: inherit; font-size: inherit; }
+  .cap.wide { max-width: 560px; }
+  .cap h3 { margin: 0; font: 600 21px/1.2 var(--font-heading); letter-spacing: normal; }
+  .cap p { margin: 0; font-size: 14px; line-height: 1.6; text-wrap: pretty; }
+
+  /* - popup - */
+  .popup {
+    max-width: 340px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-divider);
+    border-radius: 7px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .popup-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .popup-head .tile { width: 22px; height: 22px; color: inherit; }
+  .popup-word { font: 600 19px/1 var(--font-heading); }
+  .popup-site { margin-left: auto; font-size: 12px; color: var(--color-neutral-700); }
+  .label {
+    padding: 6px 16px 0;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent-700);
+  }
+  .label.pad-top { padding-top: 12px; }
+  .list { display: flex; flex-direction: column; padding: 6px 8px; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 8px; }
+  .item.active { border-radius: 4px; background: color-mix(in srgb, var(--color-text) 5%, transparent); }
+  .item.lost { padding: 8px 16px 12px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .text { flex: 1; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .age { font-size: 11px; color: var(--color-neutral-700); }
+  .place { font: 600 13px/1 var(--font-heading); color: var(--color-accent-800); }
+  .popup-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--color-divider);
+    font-size: 11px;
+    color: var(--color-neutral-700);
+  }
+
+  /* - options page - */
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--color-bg);
+    border: 1px solid var(--color-divider);
+    border-radius: 4px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  .side {
+    flex: 1 1 150px;
+    border-right: 1px solid var(--color-divider);
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+  }
+  .side-word { padding: 0 8px 14px; font: 600 18px/1 var(--font-heading); }
+  .side-item { display: flex; justify-content: space-between; padding: 7px 8px; }
+  .side-item .count { color: var(--color-neutral-700); }
+  .side-item.active { border-radius: 4px; background: var(--color-accent-100); color: var(--color-accent-800); }
+  .side-item.active .count { color: inherit; }
+  .main {
+    flex: 999 1 320px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+  .main-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .main-title { font: 400 28px/1 var(--font-heading); }
+  .search {
+    margin-left: auto;
+    flex: 0 1 220px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--color-divider);
+    border-radius: 4px;
+    color: var(--color-neutral-700);
+    font-size: 12px;
+  }
+  .filters { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .seg-mock {
+    display: flex;
+    border: 1px solid var(--color-divider);
+    border-radius: 4px;
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .seg-mock span { padding: 5px 12px; }
+  .seg-mock span + span { border-left: 1px solid var(--color-divider); }
+  .seg-mock .on { box-shadow: inset 0 0 0 1px var(--color-accent); color: var(--color-accent-700); }
+  .swatches { display: flex; gap: 6px; }
+  .swatches span { width: 14px; height: 14px; border-radius: 50%; }
+  .export { margin-left: auto; font: 600 13px/1 var(--font-heading); color: var(--color-accent-700); }
+  .rule { height: 1px; background: var(--color-divider); }
+  .site-head { display: flex; align-items: baseline; gap: 10px; }
+  .site-name { font: 600 18px/1 var(--font-heading); }
+  .site-count { font-size: 11px; color: var(--color-neutral-700); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+  .card-note {
+    border-top: 8px solid;
+    border-radius: 2px;
+    box-shadow: var(--shadow-sm);
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    min-height: 64px;
+  }
+  .card-note b { font-weight: 600; }
+  .card-note.lost { outline: 1.5px dashed var(--color-accent-700); outline-offset: 2px; }
+</style>
