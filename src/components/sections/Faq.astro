@@ -1,0 +1,104 @@
+---
+import { EXTENSION_REPOSITORY_URL, NEW_TAB } from '../../config';
+
+/**
+ * FAQ accordion section. Each item is a native <details> that animates
+ * open and closed via ::details-content height/opacity transitions.
+ * An answer is a string, or a list of strings and links.
+ */
+type Answer = string | (string | { text: string; href: string })[];
+
+const faqs: [string, Answer][] = [
+  ['Is it really free?', [
+    'Yes. No plans, no “pro”, no trial. It’s open source too, so you can take ',
+    { text: 'the code from GitHub', href: EXTENSION_REPOSITORY_URL },
+    ' and use it directly.',
+  ]],
+  ['Are there pages I can’t stick notes on?', 'A few. Browser pages like settings and the Web Store itself, PDFs in the built-in viewer, and other extensions’ pages are off-limits to every extension.'],
+  ['Can the website see my notes?', 'No. Notes are drawn in a sealed layer the page’s own scripts can’t read, and they’re never sent to the site.'],
+  ['What happens when browser sync fills up?', 'New notes keep saving on your computer, and Kurippu nudges you to turn on Drive backup. Once it’s on, there’s no limit.'],
+  ['Will notes cover the site’s menus?', 'No - they sit beneath menus, pop-ups and dialogs. You can minimise any note, or hide all of them on a site from the toolbar.'],
+  ['How do I get my notes out?', 'From the options page, export everything as Markdown or JSON. Import takes the same files back, on any browser.'],
+];
+---
+<section id="faq" class="wrap faq">
+  <div class="section-head">
+    <div class="kicker">FAQ</div>
+    <h2 class="h2">Fair questions.</h2>
+  </div>
+  <div class="list">
+    {faqs.map(([q, a]) => (
+      <details>
+        <summary>{q}</summary>
+        <div class="answer">
+          {typeof a === 'string' ? a : a.map((part) => (typeof part === 'string' ? part : <a href={part.href} {...NEW_TAB}>{part.text}</a>))}
+        </div>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .faq {
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    /* Lets height animate between 0 and auto on open/close. */
+    interpolate-size: allow-keywords;
+  }
+  .faq .h2 { text-wrap: wrap; }
+  .list { display: flex; flex-direction: column; border-bottom: 1px solid var(--color-divider); }
+  details { border-top: 1px solid var(--color-divider); }
+  summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 0;
+    font: 600 21px/1.3 var(--font-heading);
+    transition: padding 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.15s;
+  }
+  summary:hover { padding-left: 6px; color: var(--color-accent-700); }
+  /* Plus mark: a quarter turn on hover, and on into an × when the item is open. */
+  summary::after {
+    content: '';
+    flex: none;
+    width: 12px;
+    height: 12px;
+    background:
+      linear-gradient(currentColor, currentColor) center / 12px 1.5px no-repeat,
+      linear-gradient(currentColor, currentColor) center / 1.5px 12px no-repeat;
+    transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+  }
+  summary:hover::after {
+    transform: rotate(90deg);
+  }
+  details[open] summary::after {
+    transform: rotate(135deg);
+  }
+  /* Smooth show/hide of the answer panel (open and close). */
+  details::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size 0.35s ease,
+      opacity 0.28s ease,
+      content-visibility 0.35s allow-discrete;
+  }
+  details[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+  .answer { padding: 0 0 20px; font-size: 15px; line-height: 1.65; text-wrap: pretty; }
+
+  @media (prefers-reduced-motion: reduce) {
+    summary,
+    summary::after,
+    details::details-content {
+      transition: none;
+    }
+  }
+</style>
