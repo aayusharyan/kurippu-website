@@ -1,14 +1,13 @@
 ---
-import { EXTENSION_REPOSITORY_URL, INSTALL_URL, NEW_TAB } from '../../config';
 ---
 <section id="install" class="wrap install">
-  <!-- One paper chip per note on the page; filled in by the notes island (scripts/notes/board.ts). -->
+  <!-- One paper chip per note on the page; filled in by the notes board (scripts/notes/board.ts). -->
   <div class="stack" data-note-stack aria-hidden="true"></div>
   <h2>Go stick something.</h2>
-  <a class="btn btn-primary big" href={INSTALL_URL} data-install-cta data-analytics-event="select_content" data-analytics-placement="install">Add Kurippu to Chrome</a>
+  <a class="btn btn-primary big" href="https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh" data-install-cta data-analytics-event="select_content" data-analytics-placement="install">Add Kurippu to Chrome</a>
   <div class="fines">
     <div class="fine" data-note-fine>Also installs on Edge and Brave from the Chrome Web Store.</div>
-    <div class="fine">Free and open source. <a href={EXTENSION_REPOSITORY_URL} {...NEW_TAB}>Read the code on GitHub</a>.</div>
+    <div class="fine">Free and open source. <a href="https://github.com/aayusharyan/kurippu" target="_blank" rel="noopener noreferrer">Read the code on GitHub</a>.</div>
   </div>
 </section>
 
