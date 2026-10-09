@@ -1,8 +1,7 @@
 ---
-// Hero 1a "Margin". A live demo zone: seed notes are mounted by the notes island,
+// Hero 1a "Margin". A live demo zone: seed notes are mounted by the notes board,
 // absolutely positioned on wide screens, flowed into the row below the copy under 1180px.
 import Key from '../Key.astro';
-import { INSTALL_URL } from '../../config';
 ---
 <section id="hero" class="wrap hero" data-scope="hero-a" data-demo>
   <div class="copy">
@@ -10,7 +9,7 @@ import { INSTALL_URL } from '../../config';
     <h1>Stick a note on <span class="any"><em>any</em><svg viewBox="0 0 84 12" fill="none" aria-hidden="true"><path d="M2 8 C 18 2, 32 11, 48 6 S 72 3, 82 7" pathLength="1" /></svg></span> website.</h1>
     <p class="lead">Right-click, write, done. Your note comes back exactly where you left it - next visit, next week, on your other laptop.</p>
     <div class="ctas">
-      <a class="btn btn-primary" href={INSTALL_URL} data-analytics-event="select_content" data-analytics-placement="hero">Add Kurippu to Chrome</a>
+      <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh" data-analytics-event="select_content" data-analytics-placement="hero">Add Kurippu to Chrome</a>
       <a class="btn btn-secondary" href="#how">See how it works</a>
     </div>
     <div class="hint">
