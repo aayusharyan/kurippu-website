@@ -1,6 +1,6 @@
 ---
 // "Websites redesign" demo: a small mock site with two layouts of the same height. The notes
-// island (scripts/notes/board.ts) plays the redesign once when this scrolls into view, then
+// board (scripts/notes/board.ts) plays the redesign once when this scrolls into view, then
 // rings the button (data-demo-action) that replays it. [data-flip] marks each block that is
 // animated between layouts ("move" travels, "fade" cross-fades); [data-scope] marks the two that seed notes are pinned to.
 
@@ -16,7 +16,7 @@ const steps = [
     <h2 class="h2">Websites redesign. Your notes don&rsquo;t mind.</h2>
     <p class="prose">Each note remembers the bit of the page it&rsquo;s stuck to, plus where it sat. When the layout changes, every note moves with what it&rsquo;s pinned to and settles into its new spot.</p>
     <div class="actions">
-      <button class="btn btn-primary" type="button" data-demo-action="redesign" disabled>Undo the redesign</button>
+      <button class="btn btn-primary" type="button" data-analytics-id="demo-redesign" data-demo-action="redesign" disabled>Undo the redesign</button>
     </div>
     <div class="status" data-demo-status aria-live="polite">Redesigned. Both notes followed what they were pinned to.</div>
   </div>
