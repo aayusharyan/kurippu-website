@@ -30,12 +30,12 @@ npm run dev
 
 The dev server runs at <http://localhost:4321>.
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Start the dev server with hot reload on port 4321. |
-| `npm run build` | Build the static site into `dist/`. |
-| `npm run preview` | Serve the built `dist/` locally. |
-| `npm run check` | Type-check the project (`astro check`). |
+| Command           | What it does                                       |
+| ----------------- | -------------------------------------------------- |
+| `npm run dev`     | Start the dev server with hot reload on port 4321. |
+| `npm run build`   | Build the static site into `dist/`.                |
+| `npm run preview` | Serve the built `dist/` locally.                   |
+| `npm run check`   | Type-check the project (`astro check`).            |
 
 There is no test suite or linter yet. Before opening a pull request, make sure `npm run check` and `npm run build` both pass.
 
@@ -44,49 +44,49 @@ There is no test suite or linter yet. Before opening a pull request, make sure `
 ```text
 src/
   pages/
-    index.astro           the landing page (/)
-    privacy.astro         the privacy policy (/privacy/)
-    404.astro             the not-found page (built to dist/404.html)
-    sitemap.xml.ts        /sitemap.xml, listing every page in this folder except the 404
-    robots.txt.ts         /robots.txt (search engines and AI crawlers welcome)
-    llms.txt.ts           /llms.txt, a short plain-text summary for AI agents
-    llms-full.txt.ts      /llms-full.txt, the full plain-text description
-  layouts/Base.astro      <head>, meta tags, favicon links, platform check
+    index.astro             the landing page (/)
+    privacy.astro           the privacy policy (/privacy/)
+    404.astro               the not-found page (built to dist/404.html)
+    sitemap.xml.ts          /sitemap.xml, listing every page in this folder except the 404
+    robots.txt.ts           /robots.txt (search engines and AI crawlers welcome)
+    llms.txt.ts             /llms.txt, a short plain-text summary for AI agents
+    llms-full.txt.ts        /llms-full.txt, the full plain-text description
+  layouts/Base.astro        <head>, meta tags, favicon links, platform check
   components/
-    sections/             one component per landing-page section, the header included
+    sections/               one component per landing-page section, the header included
     AnalyticsConsent.astro  opt-in control and delayed Google Analytics loader
-    Icon.astro, Key.astro, Logo.astro, SiteFooter.astro
+    Icon.astro, Key.astro,  Logo.astro, SiteFooter.astro
   scripts/
-    notes/                the live sticky-note demo (the only substantial client JS)
-    arrivals.ts           one-time scroll-in animations
-    icons.ts              SVG icon paths shared by Astro markup and the demo
+    notes/                  the live sticky-note demo (the only substantial client JS)
+    arrivals.ts.            one-time scroll-in animations
+    icons.ts                SVG icon paths shared by Astro markup and the demo
   styles/
-    classical.css         design tokens and shared component classes
-    fonts.css             @font-face rules for the self-hosted fonts
-    global.css, notes.css page-level and demo styles
-  assets/fonts/           self-hosted font files
-  config.ts               site-wide settings (see Configuration)
-public/                   favicons, icons and the social preview images (og-*.png, 1200x630), served as-is
-astro.config.mjs          Astro settings, including the public `site` origin
+    classical.css           design tokens and shared component classes
+    fonts.css               @font-face rules for the self-hosted fonts
+    global.css, notes.css   page-level and demo styles
+  assets/fonts/             self-hosted font files
+  config.ts                 site-wide settings (see Configuration)
+public/                     favicons, icons and the social preview images (og-*.png, 1200x630), served as-is
+astro.config.mjs            Astro settings, including the public `site` origin
 firebase.json, .firebaserc  Firebase Hosting settings and project (see Releases)
 .github/
-  ISSUE_TEMPLATE/         bug report and feature request forms
-  PULL_REQUEST_TEMPLATE.md
-  dependabot.yml          weekly npm and GitHub Actions dependency updates
-  hero.png                README hero image, 1280x640, also the file to upload as the repository social preview
-  workflows/release.yml   manual validation, deployment and release workflow
+  ISSUE_TEMPLATE/           bug report and feature request forms
+  PULL_REQUEST_TEMPLATE.md  pre-filled pull request description: summary, screenshots and a checklist
+  dependabot.yml            weekly npm and GitHub Actions dependency updates
+  hero.png                  README hero image, 1280x640, also the file to upload as the repository social preview
+  workflows/release.yml     manual validation, deployment and release workflow
 ```
 
 ## Configuration
 
 Site-wide settings live in [`src/config.ts`](src/config.ts):
 
-| Export | Purpose |
-| --- | --- |
-| `GOOGLE_ANALYTICS_ID` | Validated GA4 measurement ID read from `PUBLIC_GOOGLE_ANALYTICS_ID` at build time. |
-| `SITE_VERSION` | `v` plus the `version` in `package.json`, shown in the footer as `(v0.1.0)`. Don't edit it by hand: the **Create Release** workflow bumps `package.json`. |
-| `href(path)` | Prefixes a site-internal path with Astro's configured `base`, so links keep working if the site is served from a sub-path. |
-| `absoluteUrl(site, path)` | Turns a site path into an absolute URL for the sitemap, `robots.txt` and `llms.txt`. Throws if `site` is not set. |
+| Export                    | Purpose                                                                                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GOOGLE_ANALYTICS_ID`     | Validated GA4 measurement ID read from `PUBLIC_GOOGLE_ANALYTICS_ID` at build time.                                                                        |
+| `SITE_VERSION`            | `v` plus the `version` in `package.json`, shown in the footer as `(v0.1.0)`. Don't edit it by hand: the **Create Release** workflow bumps `package.json`. |
+| `href(path)`              | Prefixes a site-internal path with Astro's configured `base`, so links keep working if the site is served from a sub-path.                                |
+| `absoluteUrl(site, path)` | Turns a site path into an absolute URL for the sitemap, `robots.txt` and `llms.txt`. Throws if `site` is not set.                                         |
 
 To serve from a sub-path, set `base` in [`astro.config.mjs`](astro.config.mjs). `site` there is the public origin (`https://kurippu.yush.dev`); change it if the domain changes, because the files in the next section and the social preview image tags are all built from it.
 
@@ -94,11 +94,11 @@ To serve from a sub-path, set `base` in [`astro.config.mjs`](astro.config.mjs). 
 
 The site publishes a few files so that crawlers and AI agents can find it and understand what Kurippu is. They are Astro endpoints in `src/pages/` that need no dependencies and are built from `site`:
 
-| File | What it is |
-| --- | --- |
-| `/sitemap.xml` | Every page except the 404. New pages in `src/pages/*.astro` are picked up automatically. |
-| `/robots.txt` | Allows everyone, names the main AI crawlers explicitly, and points to the sitemap. |
-| `/llms.txt` | A short Markdown summary and page index, following the [llms.txt convention](https://llmstxt.org). |
+| File             | What it is                                                                                                       |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `/sitemap.xml`   | Every page except the 404. New pages in `src/pages/*.astro` are picked up automatically.                         |
+| `/robots.txt`    | Allows everyone, names the main AI crawlers explicitly, and points to the sitemap.                               |
+| `/llms.txt`      | A short Markdown summary and page index, following the [llms.txt convention](https://llmstxt.org).               |
 | `/llms-full.txt` | The whole product in one plain-text file: how it works, sync, privacy, permissions, browser support and the FAQ. |
 
 The landing page also carries schema.org `SoftwareApplication` data (JSON-LD, written into `<head>` by `Base.astro`).
@@ -156,11 +156,11 @@ The commit and tag are pushed only after the deploy succeeds, so every tag on `m
 
 The workflow needs these repository settings:
 
-| Setting | Kind | Value |
-| --- | --- | --- |
-| `FIREBASE_PROJECT_ID` | variable | `kurippu-510919` |
-| `GOOGLE_ANALYTICS_ID` | variable | the GA4 web measurement ID, `G-ABC123DEF4` |
-| `FIREBASE_SERVICE_ACCOUNT_JSON` | secret | the JSON key of a service account allowed to deploy to Firebase Hosting |
+| Setting                         | Kind     | Value                                                                   |
+| ------------------------------- | -------- | ----------------------------------------------------------------------- |
+| `FIREBASE_PROJECT_ID`           | variable | `kurippu-510919`                                                        |
+| `GOOGLE_ANALYTICS_ID`           | variable | the GA4 web measurement ID, `G-ABC123DEF4`                              |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | secret   | the JSON key of a service account allowed to deploy to Firebase Hosting |
 
 It pushes straight to `main` with the workflow's own token, so branch protection on `main` must allow that.
 
