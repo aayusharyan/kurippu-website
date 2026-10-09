@@ -14,7 +14,7 @@ import Shortcuts from '../components/sections/Shortcuts.astro';
 import Faq from '../components/sections/Faq.astro';
 import NameOrigin from '../components/sections/NameOrigin.astro';
 import Install from '../components/sections/Install.astro';
-import { CHROME_STORE_LISTING, EXTENSION_REPOSITORY_URL, absoluteUrl, href } from '../config';
+import { absoluteUrl, href } from '../config';
 import '../styles/notes.css';
 
 const description = 'Kurippu is a free, open-source Chrome extension for sticking notes on any website. Right-click, write, done - your note comes back exactly where you left it.';
@@ -27,13 +27,13 @@ const jsonLd = {
   alternateName: ['குறிப்பு', 'クリップ'],
   description,
   url: Astro.site ? absoluteUrl(Astro.site) : undefined,
-  sameAs: EXTENSION_REPOSITORY_URL,
+  sameAs: 'https://github.com/aayusharyan/kurippu',
   applicationCategory: 'BrowserApplication',
   operatingSystem: 'Chrome, Microsoft Edge, Brave',
   inLanguage: 'en',
   isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  installUrl: CHROME_STORE_LISTING ?? undefined,
+  installUrl: 'https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh',
   featureList: [
     'Add a sticky note to any website from the right-click menu, or with Command or Ctrl + click',
     'Notes are written in Markdown and shown formatted in preview',
@@ -67,14 +67,14 @@ const jsonLd = {
       <NameOrigin />
       <Install />
     </main>
-    <SiteFooter links={[{ label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: EXTENSION_REPOSITORY_URL, newTab: true }, ...(CHROME_STORE_LISTING ? [{ label: 'Chrome Web Store', href: CHROME_STORE_LISTING }] : [])]} />
+    <SiteFooter links={[{ label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: 'https://github.com/aayusharyan/kurippu', newTab: true }, { label: 'Chrome Web Store', href: 'https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh' }]} />
 
     <div class="ctx demo-menu" data-menu data-nonote role="menu" aria-label="Browser menu (demo)" hidden>
       <div class="ctx-item is-dim">Back</div>
       <div class="ctx-item is-dim">Reload</div>
       <div class="ctx-item is-dim">Print</div>
       <div class="ctx-sep"></div>
-      <button class="ctx-hot" type="button" role="menuitem" data-menu-add><span class="tile"><img src={href('favicon.svg')} width="16" height="16" alt="" /></span>Add sticky note here</button>
+      <button class="ctx-hot" type="button" role="menuitem" data-analytics-id="demo-add-note" data-menu-add><span class="tile"><img src={href('favicon.svg')} width="16" height="16" alt="" /></span>Add sticky note here</button>
       <div class="ctx-sep"></div>
       <div class="ctx-item is-dim">Inspect</div>
     </div>
@@ -82,6 +82,7 @@ const jsonLd = {
     <button
       class="btn btn-primary reset-fab"
       type="button"
+      data-analytics-id="demo-reset-notes"
       data-reset-fab
       data-nonote
       title="Reset notes to default"
