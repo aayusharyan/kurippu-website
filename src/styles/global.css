@@ -181,8 +181,10 @@ a:where(:not(.btn)):active { color: var(--color-accent-800); }
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
+  text-decoration: none;
   transition: color 0.15s, text-underline-offset 0.18s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.1s;
 }
+.back .label { text-decoration: underline; }
 .back .arrow {
   display: inline-block;
   transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25);
