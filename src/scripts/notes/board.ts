@@ -7,7 +7,9 @@ import { HUES, isSeed, seeds, type Note } from './seeds';
 // v3: the name-origin section gained a seed and anchor, so older saved defaults are dropped.
 // v4: the Screens and Shortcuts sections gained their "in development" seeds, which saved lists predate.
 // v5: the name-origin seed was renamed from "name1" (an "n" id reads as a visitor note), so v4 lists would keep a stray copy.
-const KEY = 'kurippu-site-notes-v5';
+// v6: saves carry a stamp of the seeds they were made against (see load), so editing a seed no longer needs a bump.
+// Bump only when the shape of a Note changes, or an anchor (data-scope) that visitor notes may hang from goes away.
+const KEY = 'kurippu-site-notes-v6';
 const NOTE_W = 236; // note width plus breathing room, used when clamping
 // Set by the blocking script in layouts/Base.astro, so labels built here match the ones in the markup.
 const IS_MAC = document.documentElement.classList.contains('mac');
@@ -102,12 +104,18 @@ export function mountBoard(root: HTMLElement) {
 
   // - state -
   function load(): Note[] {
-    let stored: unknown = null;
+    let stored: { seeds?: unknown; notes?: unknown } | null = null;
     try { stored = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch {}
-    const list = Array.isArray(stored) ? (stored as Note[]) : seeds(MOD);
+    const saved = Array.isArray(stored?.notes) ? (stored.notes as Note[]) : null;
+    // Seeds are the site's own copy, not the visitor's, but every save writes them out with the rest. A board
+    // saved against an older set of seeds (a release has changed one since) therefore keeps only what the
+    // visitor made and takes the current seeds, instead of freezing the old ones in place.
+    const list = saved && stored?.seeds === DEFAULT_NOTES_FP
+      ? saved
+      : [...seeds(MOD), ...(saved ?? []).filter((n) => n.id.startsWith('n'))];
     return list.map((n) => ({ ...n, lifted: false }));
   }
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch {} };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ seeds: DEFAULT_NOTES_FP, notes })); } catch {} };
 
   /** True when the notes differ from a fresh page load. The redesign demo doesn't count: it runs by itself. */
   const isDirty = () => noteFingerprint(notes) !== DEFAULT_NOTES_FP;
@@ -541,8 +549,7 @@ export function mountBoard(root: HTMLElement) {
 
   // - "Websites redesign" demo -
   const status = $('[data-demo-status]')!;
-  const redesignBtn = $('[data-demo-action="redesign"]')!;
-  const demoActions = $('[data-demo-actions]');
+  const redesignBtn = $<HTMLButtonElement>('[data-demo-action="redesign"]')!;
 
   function applyDemo() {
     demoPage.classList.toggle('is-redesigned', demo.redesigned);
@@ -703,25 +710,32 @@ export function mountBoard(root: HTMLElement) {
     b.addEventListener('click', () => actions[b.dataset.demoAction!]());
   });
 
-  // The first run is automatic: a beat after the demo scrolls into view it redesigns itself, and
-  // only when that has finished does the button fade in, to undo or replay it. It then stays for
-  // the rest of the visit. Without motion (or IntersectionObserver) the button is simply there.
+  // The first run is automatic: a beat after the demo scrolls into view it redesigns itself. Its
+  // control already describes that destination, then unlocks and rings once the motion is done.
+  // Without motion (or IntersectionObserver), show the destination immediately and unlock it.
   const FIRST_RUN_DELAY = 700;
   const RUN_MS = MOVE_DELAY + NOTE_LAG + NOTE_MS + 300;
-  if (demoActions && 'IntersectionObserver' in window && !stillMq.matches) {
-    demoActions.classList.add('is-waiting');
+  if ('IntersectionObserver' in window && !stillMq.matches) {
     const io = new IntersectionObserver(
       (entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         io.disconnect();
         window.setTimeout(() => {
-          if (!demo.redesigned) actions.redesign();
-          window.setTimeout(() => demoActions.classList.remove('is-waiting'), RUN_MS);
+          actions.redesign();
+          window.setTimeout(() => {
+            redesignBtn.disabled = false;
+            replay(redesignBtn, 'is-ringing');
+          }, RUN_MS);
         }, FIRST_RUN_DELAY);
       },
       { threshold: 0.6 },
     );
     io.observe(demoPage);
+  } else {
+    demo.redesigned = true;
+    applyDemo();
+    render();
+    redesignBtn.disabled = false;
   }
 
   // Notes in the mock site are clamped to its width, so re-place them when it changes.
