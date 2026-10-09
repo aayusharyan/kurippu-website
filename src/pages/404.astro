@@ -4,7 +4,7 @@
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { CHROME_STORE_LISTING, EXTENSION_REPOSITORY_URL, href } from '../config';
+import { href } from '../config';
 ---
 <Base
   title="Kurippu - Page not found"
@@ -39,7 +39,7 @@ import { CHROME_STORE_LISTING, EXTENSION_REPOSITORY_URL, href } from '../config'
       </div>
     </main>
 
-    <SiteFooter links={[{ label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: EXTENSION_REPOSITORY_URL, newTab: true }, ...(CHROME_STORE_LISTING ? [{ label: 'Chrome Web Store', href: CHROME_STORE_LISTING }] : [])]} />
+    <SiteFooter links={[{ label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: 'https://github.com/aayusharyan/kurippu', newTab: true }, { label: 'Chrome Web Store', href: 'https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh' }]} />
   </div>
 </Base>
 
