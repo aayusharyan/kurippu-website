@@ -1,5 +1,5 @@
 ---
-import { GOOGLE_ANALYTICS_ID, NEW_TAB, SITE_VERSION } from '../config';
+import { GOOGLE_ANALYTICS_ID, SITE_VERSION } from '../config';
 
 interface Props { links: { label: string; href: string; newTab?: boolean }[] }
 const { links } = Astro.props;
@@ -9,8 +9,8 @@ const year = new Date().getFullYear();
 ---
 <footer>
   <div class="wrap row">
-    {links.map((l) => <a href={l.href} {...(l.newTab ? NEW_TAB : {})}>{l.label}</a>)}
-    {hasAnalyticsChoices && <button type="button" data-analytics-settings>Analytics settings</button>}
+    {links.map((l) => <a href={l.href} target={l.newTab ? '_blank' : undefined} rel={l.newTab ? 'noopener noreferrer' : undefined}>{l.label}</a>)}
+    {hasAnalyticsChoices && <button type="button" data-analytics-id="footer-analytics-settings" data-analytics-settings>Analytics settings</button>}
     <span class="copy">&copy; {year} Kurippu ({SITE_VERSION})</span>
   </div>
 </footer>
