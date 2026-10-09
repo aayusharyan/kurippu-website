@@ -4,6 +4,42 @@
   "private": true,
   "type": "module",
   "version": "0.2.0",
+  "author": {
+    "name": "Aayush Sinha",
+    "email": "hello@yush.dev",
+    "url": "https://yush.dev"
+  },
+  "homepage": "https://kurippu.yush.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aayusharyan/kurippu-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aayusharyan/kurippu-website/issues",
+    "email": "hello@yush.dev"
+  },
+  "keywords": [
+    "notes-app",
+    "browser-extension",
+    "chrome",
+    "chrome-extension",
+    "edge-extension",
+    "privacy-first",
+    "google-drive",
+    "kurippu",
+    "landing-page",
+    "markdown",
+    "note-taking",
+    "free",
+    "privacy",
+    "productivity",
+    "static-site",
+    "sticky-notes",
+    "product-website",
+    "web-annotation",
+    "website",
+    "llms-txt"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=22.12.0"
