@@ -1,6 +1,5 @@
 ---
 import Icon from '../Icon.astro';
-import { EXTENSION_REPOSITORY_URL, NEW_TAB } from '../../config';
 
 // Static copy rendered with set:html, so typographic characters are written as HTML entities.
 const points = [
@@ -24,7 +23,7 @@ const points = [
     ))}
   </div>
   <div class="links">
-    <a class="more" href={EXTENSION_REPOSITORY_URL} {...NEW_TAB}>Read the source on GitHub <Icon name="arrow-right" size={14} /></a>
+    <a class="more" href="https://github.com/aayusharyan/kurippu" target="_blank" rel="noopener noreferrer">Read the source on GitHub <Icon name="arrow-right" size={14} /></a>
   </div>
 </section>
 
