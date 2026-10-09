@@ -5,19 +5,21 @@ import { EXTENSION_REPOSITORY_URL, NEW_TAB } from '../../config';
  * FAQ accordion section. Each item is a native <details> that animates
  * open and closed via ::details-content height/opacity transitions.
  * An answer is a string, or a list of strings and links.
+ * Questions and answers are static copy rendered with set:html, so typographic
+ * characters are written as HTML entities. Never put visitor-entered text here.
  */
 type Answer = string | (string | { text: string; href: string })[];
 
 const faqs: [string, Answer][] = [
   ['Is it really free?', [
-    'Yes. No plans, no “pro”, no trial. It’s open source too, so you can take ',
+    'Yes. No plans, no &ldquo;pro&rdquo;, no trial. It&rsquo;s open source too, so you can take ',
     { text: 'the code from GitHub', href: EXTENSION_REPOSITORY_URL },
     ' and use it directly.',
   ]],
-  ['Are there pages I can’t stick notes on?', 'A few. Browser pages like settings and the Web Store itself, PDFs in the built-in viewer, and other extensions’ pages are off-limits to every extension.'],
-  ['Can the website see my notes?', 'No. Notes are drawn in a sealed layer the page’s own scripts can’t read, and they’re never sent to the site.'],
-  ['What happens when browser sync fills up?', 'New notes keep saving on your computer, and Kurippu nudges you to turn on Drive backup. Once it’s on, there’s no limit.'],
-  ['Will notes cover the site’s menus?', 'No - they sit beneath menus, pop-ups and dialogs. You can minimise any note, or hide all of them on a site from the toolbar.'],
+  ['Are there pages I can&rsquo;t stick notes on?', 'A few. Browser pages like settings and the Web Store itself, PDFs in the built-in viewer, and other extensions&rsquo; pages are off-limits to every extension.'],
+  ['Can the website see my notes?', 'No. Notes are drawn in a sealed layer the page&rsquo;s own scripts can&rsquo;t read, and they&rsquo;re never sent to the site.'],
+  ['What happens when browser sync fills up?', 'New notes keep saving on your computer, and Kurippu nudges you to turn on Drive backup. Once it&rsquo;s on, there&rsquo;s no limit.'],
+  ['Will notes cover the site&rsquo;s menus?', 'No - they sit beneath menus, pop-ups and dialogs. You can minimise any note, or hide all of them on a site from the toolbar.'],
   ['How do I get my notes out?', 'From the options page, export everything as Markdown or JSON. Import takes the same files back, on any browser.'],
 ];
 ---
@@ -29,9 +31,9 @@ const faqs: [string, Answer][] = [
   <div class="list">
     {faqs.map(([q, a]) => (
       <details>
-        <summary>{q}</summary>
+        <summary set:html={q} />
         <div class="answer">
-          {typeof a === 'string' ? a : a.map((part) => (typeof part === 'string' ? part : <a href={part.href} {...NEW_TAB}>{part.text}</a>))}
+          {(typeof a === 'string' ? [a] : a).map((part) => (typeof part === 'string' ? <Fragment set:html={part} /> : <a href={part.href} {...NEW_TAB}>{part.text}</a>))}
         </div>
       </details>
     ))}
