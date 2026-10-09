@@ -1,6 +1,5 @@
-// Lucide icon bodies (24×24 viewBox), shared by Astro markup and the notes island.
+// Lucide icon bodies (24×24 viewBox), shared by Astro markup and the notes board.
 export const ICONS = {
-  'sticky-note': '<path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/>',
   'trash-2': '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
   check: '<path pathLength="1" d="M4 12 9 17 20 6"/>',
   'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
