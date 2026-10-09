@@ -1,6 +1,6 @@
 ---
 import Logo from '../Logo.astro';
-import { INSTALL_URL, href } from '../../config';
+import { href } from '../../config';
 ---
 <header id="top" class="wrap">
   <Logo />
@@ -11,7 +11,7 @@ import { INSTALL_URL, href } from '../../config';
     <a href="#open-source">Open source</a>
     <a href="#faq">FAQ</a>
   </nav>
-  <!-- Filled in by the notes island (scripts/notes/board.ts): every note on the page, seeds included. -->
+  <!-- Filled in by the notes board (scripts/notes/board.ts): every note on the page, seeds included. -->
   <span class="count tnum" data-note-count hidden>
     <span class="count-icon"><img src={href('favicon.svg')} width="19" height="19" alt="" /></span>
     <span class="count-text">
@@ -19,7 +19,7 @@ import { INSTALL_URL, href } from '../../config';
       <span>on this page</span>
     </span>
   </span>
-  <a class="btn btn-primary" href={INSTALL_URL} data-analytics-event="select_content" data-analytics-placement="header">Add Kurippu to Chrome</a>
+  <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh" data-analytics-event="select_content" data-analytics-placement="header">Add Kurippu to Chrome</a>
 </header>
 
 <style>
