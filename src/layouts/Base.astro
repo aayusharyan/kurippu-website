@@ -18,10 +18,21 @@ interface Props {
   jsonLd?: Record<string, unknown>;
 }
 const DEFAULT_IMAGE = 'og-home.png';
-const DEFAULT_IMAGE_ALT = 'The headline “Stick a note on any website.” beside three sticky notes, one reading “Hello, I’m a note.”';
-const { title, description, image = DEFAULT_IMAGE, imageAlt: imageAltProp, canonical = true, jsonLd } = Astro.props;
+const DEFAULT_IMAGE_ALT = 'The headline &ldquo;Stick a note on any website.&rdquo; beside three sticky notes, one reading &ldquo;Hello, I&rsquo;m a note.&rdquo;';
+// Pages write typographic characters in these props as HTML entities, but Astro escapes the "&" again
+// in <title> and attributes, so they are decoded here, once, before use. Covers the entities the site uses.
+const NAMED_ENTITIES: Record<string, string> = {
+  rsquo: '’', ldquo: '“', rdquo: '”', hellip: '…', middot: '·', copy: '©', larr: '←', amp: '&', lt: '<', gt: '>', quot: '"',
+};
+const decodeEntities = (text: string) =>
+  text.replace(/&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi, (match, dec, hex, name) =>
+    dec ? String.fromCodePoint(Number(dec)) : hex ? String.fromCodePoint(parseInt(hex, 16)) : NAMED_ENTITIES[name] ?? match);
+const { title: titleProp, description: descriptionProp, image = DEFAULT_IMAGE, imageAlt: imageAltProp, canonical = true, jsonLd } = Astro.props;
+const title = decodeEntities(titleProp);
+const description = decodeEntities(descriptionProp);
 // The default image's alt text only belongs to the default image.
-const imageAlt = imageAltProp ?? (image === DEFAULT_IMAGE ? DEFAULT_IMAGE_ALT : undefined);
+const imageAltSource = imageAltProp ?? (image === DEFAULT_IMAGE ? DEFAULT_IMAGE_ALT : undefined);
+const imageAlt = imageAltSource && decodeEntities(imageAltSource);
 // Astro owns the environment mode. Development always shows the consent UI but receives no
 // measurement ID, so UI work cannot accidentally send analytics.
 const isDevelopment = import.meta.env.DEV;
