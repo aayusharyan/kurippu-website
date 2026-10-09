@@ -20,7 +20,7 @@ const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: s
 export class NoteView {
   /** Positioned wrapper the board moves between containers. */
   readonly slot = h('div', 'note-slot');
-  private readonly el = h('div', 'sticky');
+  private readonly el = h('div', 'note');
   private readonly body = h('div');
   private readonly editBtn = h('button', '', 'Edit');
   private readonly previewBtn = h('button', '', 'Preview');
@@ -35,9 +35,12 @@ export class NoteView {
     const band = h('div', 'note-band');
     const seg = h('div', 'note-seg');
     for (const b of [this.editBtn, this.previewBtn]) b.type = 'button';
+    this.editBtn.dataset.analyticsId = 'demo-note-edit';
+    this.previewBtn.dataset.analyticsId = 'demo-note-preview';
     seg.append(this.editBtn, this.previewBtn);
     const del = h('button', 'note-del');
     del.type = 'button';
+    del.dataset.analyticsId = 'demo-note-delete';
     del.title = 'Delete note';
     del.setAttribute('aria-label', 'Delete note');
     del.innerHTML = svg('trash-2', 13);
@@ -120,6 +123,7 @@ export class NoteView {
     for (const hue of HUES) {
       const s = h('button', 'note-swatch');
       s.type = 'button';
+      s.dataset.analyticsId = 'demo-note-color';
       s.dataset.hue = String(hue);
       s.style.setProperty('--sw', String(hue));
       s.setAttribute('aria-label', 'Color');
