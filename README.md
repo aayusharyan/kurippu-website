@@ -9,7 +9,6 @@ This repository contains **the website only**. The extension's source lives in t
 The site is static HTML, and the landing page is itself a live sticky-note demo: visitors can add, drag and edit notes anywhere on it, the way the extension does on any other page.
 
 - **Three pages:** `/` (landing page), `/privacy/` (privacy policy) and a 404 page that the host serves for any unknown URL.
-- **Little JavaScript, no framework:** only the landing page is interactive. It loads one script of about 22 kB (9 kB gzipped), nearly all of it the demo, plus a small scroll-in animation helper and a tiny inline platform check that picks the ⌘ or Ctrl label. The privacy policy and the 404 page are plain HTML with no notes. Builds with a Google Analytics ID also include the consent control, and Google's own script loads only after a visitor opts in.
 - **Privacy-first analytics:** the extension has no analytics. The website loads Google Analytics only after explicit consent, keeps all advertising features disabled, and never sends visitor-written demo notes. Fonts and other assets remain self-hosted.
 
 ## Tech stack
@@ -57,7 +56,7 @@ src/
     AnalyticsConsent.astro  opt-in control and delayed Google Analytics loader
     Icon.astro, Key.astro,  Logo.astro, SiteFooter.astro
   scripts/
-    notes/                  the live sticky-note demo (the only substantial client JS)
+    notes/                  the live sticky-note demo
     arrivals.ts.            one-time scroll-in animations
     icons.ts                SVG icon paths shared by Astro markup and the demo
   styles/
