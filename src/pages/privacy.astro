@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { CONTACT_EMAIL, EXTENSION_REPOSITORY_URL, NEW_TAB, THIRD_PARTY_NOTICES_URL, href } from '../config';
+import { href } from '../config';
 
 // Static copy rendered with set:html, so typographic characters are written as HTML entities.
 const permissions = [
@@ -26,7 +26,7 @@ const permissions = [
     <main>
       <article>
         <div class="intro">
-          <div class="kicker tnum">Effective 8 October 2026</div>
+          <div class="kicker tnum">Effective 9 October 2026</div>
           <h1>Privacy policy</h1>
           <p class="lead">This policy covers the Kurippu browser extension and this product website. The extension keeps note data under your control and contains no advertising or analytics. The website measures visits with Google Analytics only after you agree.</p>
         </div>
@@ -49,15 +49,15 @@ const permissions = [
           <h2>Optional Drive backups</h2>
           <p class="prose">Kurippu does not activate this feature until you choose it and sign in to Google. The permission it requests is limited to a private app folder, where the extension maintains one backup file. That scope does not allow Kurippu to view, open or modify the rest of your Drive. The extension also obtains the connected account&rsquo;s email address and ID. It displays the email in settings for account identification and uses the ID when deriving the backup&rsquo;s encryption key.</p>
           <p class="prose">Encryption happens locally before the file is uploaded, and the extension communicates with Google without passing data through a Kurippu server. Since the encryption key is based on your Google account, protecting that account protects the backup. We recommend enabling 2-Step Verification.</p>
-          <p class="boxed">Kurippu&rsquo;s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" {...NEW_TAB}>Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+          <p class="boxed">Kurippu&rsquo;s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
         </section>
 
         <section>
           <h2>Analytics on this website</h2>
-          <p class="prose">With your permission, this site uses Google Analytics 4 to learn how people arrive and which parts they use. The information sent to Google includes page views, page addresses, referring pages, selected actions such as Add to Chrome button clicks, and device details such as language, browser, operating system, device type and screen size. Google may also determine an approximate location. Analytics does not produce heatmaps or screen recordings here, and we exclude the text entered in demo notes, your name, your email address and any other custom identifier.</p>
+          <p class="prose">With your permission, this site uses Google Analytics 4 to learn how people arrive and which parts they use. The information sent to Google includes page views, page addresses, referring pages, campaign parameters such as <code>utm_source</code>, <code>utm_medium</code> and <code>utm_campaign</code>, every button and link click, link destinations, and device details such as language, browser, operating system, device type and screen size. Click events use identifiers defined by the site and never copy button or link text from the page. Google may also determine an approximate location. Analytics does not produce heatmaps or screen recordings here, and we exclude the text entered in demo notes, your name, your email address and any other custom identifier.</p>
           <p class="prose">Nothing from Google Analytics is loaded or requested before you select <i>Allow analytics</i>. After consent, it may place first-party cookies including <code>_ga</code> and <code>_ga_&lt;container-id&gt;</code>, which distinguish visitors and sessions. We keep advertising storage, advertising user data, advertising personalization and Google signals switched off.</p>
           <p class="prose">The site records your decision in this browser&rsquo;s <code>localStorage</code> as <code>kurippu-site-google-analytics-consent-v1</code>. That entry uses browser storage rather than a cookie. The <i>Analytics settings</i> link in the footer lets you revise the decision whenever you wish. If you decline or later withdraw permission, future pages will not load Google Analytics. Previously created analytics cookies can persist until you remove them or they expire, but this site will neither load Analytics nor read those cookies.</p>
-          <p class="prose">Google is the recipient and processor of analytics information. During collection, it uses IP addresses for functions that include estimating location and securing the service, then says it discards the raw addresses. The default lifetime of <code>_ga</code> cookies is two years. Retention of user-level and event-level information depends on the Analytics property&rsquo;s configured retention period. Further details are available in <a href="https://policies.google.com/privacy" {...NEW_TAB}>Google&rsquo;s Privacy Policy</a>, its explanation of <a href="https://policies.google.com/technologies/partner-sites" {...NEW_TAB}>data use on partner sites</a> and the <a href="https://support.google.com/analytics/answer/7667196" {...NEW_TAB}>Google Analytics retention documentation</a>.</p>
+          <p class="prose">Google is the recipient and processor of analytics information. During collection, it uses IP addresses for functions that include estimating location and securing the service, then says it discards the raw addresses. The default lifetime of <code>_ga</code> cookies is two years. Retention of user-level and event-level information depends on the Analytics property&rsquo;s configured retention period. Further details are available in <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google&rsquo;s Privacy Policy</a>, its explanation of <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">data use on partner sites</a> and the <a href="https://support.google.com/analytics/answer/7667196" target="_blank" rel="noopener noreferrer">Google Analytics retention documentation</a>.</p>
         </section>
 
         <section>
@@ -82,7 +82,7 @@ const permissions = [
 
         <section>
           <h2>Managing and deleting your data</h2>
-          <p class="prose">Individual notes can be changed or removed at any time. From the options page, you can download the complete collection as Markdown or JSON, or erase every note. Disconnecting Google Drive ends future backups. To delete its existing backup as well, remove Kurippu&rsquo;s data from <i>Manage apps</i> in Drive settings, then revoke the connection at <a href="https://myaccount.google.com/permissions" {...NEW_TAB}>myaccount.google.com/permissions</a>. Removing the extension clears the Kurippu data held by your browser.</p>
+          <p class="prose">Individual notes can be changed or removed at any time. From the options page, you can download the complete collection as Markdown or JSON, or erase every note. Disconnecting Google Drive ends future backups. To delete its existing backup as well, remove Kurippu&rsquo;s data from <i>Manage apps</i> in Drive settings, then revoke the connection at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>. Removing the extension clears the Kurippu data held by your browser.</p>
         </section>
 
         <section>
@@ -92,17 +92,17 @@ const permissions = [
 
         <section>
           <h2>Independent verification</h2>
-          <p class="prose">The extension is free and open source. Its <a href={EXTENSION_REPOSITORY_URL} {...NEW_TAB}>public repository on GitHub</a> lets you inspect its storage and network behavior directly. Attribution and license information for this website&rsquo;s fonts and icons appears in the <a href={THIRD_PARTY_NOTICES_URL} {...NEW_TAB}>third-party notices</a>.</p>
+          <p class="prose">The extension is free and open source. Its <a href="https://github.com/aayusharyan/kurippu" target="_blank" rel="noopener noreferrer">public repository on GitHub</a> lets you inspect its storage and network behavior directly. Attribution and license information for this website&rsquo;s fonts and icons appears in the <a href="https://github.com/aayusharyan/kurippu-website/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">third-party notices</a>.</p>
         </section>
 
         <section>
           <h2>Policy updates and questions</h2>
-          <p class="prose">Revisions will appear on this page with a new effective date. Material changes will also be identified in the extension&rsquo;s release notes. For questions about this policy, contact {CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`} {...NEW_TAB}>{CONTACT_EMAIL}</a> : <span class="todo">[contact email]</span>}.</p>
+          <p class="prose">Revisions will appear on this page with a new effective date. Material changes will also be identified in the extension&rsquo;s release notes. For questions about this policy, contact <a href="mailto:hello@yush.dev" target="_blank" rel="noopener noreferrer">hello@yush.dev</a>.</p>
         </section>
       </article>
     </main>
 
-    <SiteFooter links={[{ label: 'Home', href: href() }, { label: 'Source code', href: EXTENSION_REPOSITORY_URL, newTab: true }]} />
+    <SiteFooter links={[{ label: 'Home', href: href() }, { label: 'Source code', href: 'https://github.com/aayusharyan/kurippu', newTab: true }]} />
   </div>
 </Base>
 
@@ -170,10 +170,4 @@ const permissions = [
   li { padding: 10px 0; border-bottom: 1px solid var(--color-divider); }
   li:last-child { border-bottom: 0; }
   .perm { white-space: nowrap; }
-  .todo {
-    padding: 1px 6px;
-    background: var(--color-accent-100);
-    color: var(--color-accent-800);
-    border-radius: 3px;
-  }
 </style>
