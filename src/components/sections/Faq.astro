@@ -1,5 +1,4 @@
 ---
-import { EXTENSION_REPOSITORY_URL, NEW_TAB } from '../../config';
 
 /**
  * FAQ accordion section. Each item is a native <details> that animates
@@ -13,7 +12,7 @@ type Answer = string | (string | { text: string; href: string })[];
 const faqs: [string, Answer][] = [
   ['Is it really free?', [
     'Yes. No plans, no &ldquo;pro&rdquo;, no trial. It&rsquo;s open source too, so you can take ',
-    { text: 'the code from GitHub', href: EXTENSION_REPOSITORY_URL },
+    { text: 'the code from GitHub', href: 'https://github.com/aayusharyan/kurippu' },
     ' and use it directly.',
   ]],
   ['Are there pages I can&rsquo;t stick notes on?', 'A few. Browser pages like settings and the Web Store itself, PDFs in the built-in viewer, and other extensions&rsquo; pages are off-limits to every extension.'],
@@ -33,7 +32,7 @@ const faqs: [string, Answer][] = [
       <details>
         <summary set:html={q} />
         <div class="answer">
-          {(typeof a === 'string' ? [a] : a).map((part) => (typeof part === 'string' ? <Fragment set:html={part} /> : <a href={part.href} {...NEW_TAB}>{part.text}</a>))}
+          {(typeof a === 'string' ? [a] : a).map((part) => (typeof part === 'string' ? <Fragment set:html={part} /> : <a href={part.href} target="_blank" rel="noopener noreferrer">{part.text}</a>))}
         </div>
       </details>
     ))}
