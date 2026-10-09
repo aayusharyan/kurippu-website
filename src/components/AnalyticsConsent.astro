@@ -19,12 +19,12 @@ const { measurementId, isDevelopment } = Astro.props;
 >
   <div class="copy">
     <h2 id="analytics-consent-title">Optional analytics</h2>
-    <p>May we use Google Analytics cookies to understand how visitors find and use this website? Your page views and clicks, such as Add to Chrome, are sent to Google. The extension has no analytics.</p>
-    <a href={href('privacy/')}>Read the privacy policy</a>
+    <p>May we use Google Analytics cookies to understand how visitors find and use this website? Your page views, campaign details and button and link clicks are sent to Google. The extension has no analytics.</p>
+    <a href={href('privacy/')} data-analytics-id="consent-privacy-policy">Read the privacy policy</a>
   </div>
   <div class="actions">
-    <button class="btn btn-secondary" type="button" data-analytics-decline>Decline</button>
-    <button class="btn btn-primary" type="button" data-analytics-accept>Allow analytics</button>
+    <button class="btn btn-secondary" type="button" data-analytics-id="consent-decline" data-analytics-decline>Decline</button>
+    <button class="btn btn-primary" type="button" data-analytics-id="consent-accept" data-analytics-accept>Allow analytics</button>
   </div>
 </aside>
 
@@ -130,7 +130,7 @@ const { measurementId, isDevelopment } = Astro.props;
     hideSequence += 1;
     panel.hidden = false;
     panel.classList.remove('is-visible', 'is-leaving');
-    // Reflow lets the entrance animation replay when Privacy choices reopens the panel.
+    // Reflow lets the entrance animation replay when Analytics settings reopens the panel.
     void panel.offsetWidth;
     panel.classList.add('is-visible');
   };
@@ -187,12 +187,28 @@ const { measurementId, isDevelopment } = Astro.props;
 
   document.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return;
-    const target = event.target.closest<HTMLElement>('[data-analytics-event]');
-    const eventName = target?.dataset.analyticsEvent;
-    if (!eventName) return;
-    (window as AnalyticsWindow).gtag?.('event', eventName, {
-      content_type: 'install_cta',
-      content_id: target?.dataset.analyticsPlacement || 'unknown',
-    });
+    const target = event.target.closest<HTMLAnchorElement | HTMLButtonElement>('a, button');
+    if (!target) return;
+
+    const isLink = target instanceof HTMLAnchorElement;
+    const eventName = target.dataset.analyticsEvent || (isLink ? 'link_click' : 'button_click');
+    const contentType = target.dataset.analyticsEvent === 'select_content'
+      ? 'install_cta'
+      : isLink ? 'link' : 'button';
+    const contentId = target.dataset.analyticsPlacement
+      || target.dataset.analyticsId
+      || (isLink ? target.getAttribute('href') : null)
+      || 'unidentified';
+    const parameters: Record<string, string | boolean> = {
+      content_type: contentType,
+      content_id: contentId,
+    };
+
+    if (isLink) {
+      parameters.link_url = target.href;
+      parameters.link_domain = target.hostname;
+      parameters.outbound = !!target.hostname && target.origin !== location.origin;
+    }
+    (window as AnalyticsWindow).gtag?.('event', eventName, parameters);
   });
 </script>
