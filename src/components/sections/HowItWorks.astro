@@ -1,6 +1,7 @@
 ---
 import Icon from '../Icon.astro';
 import Key from '../Key.astro';
+import { href } from '../../config';
 ---
 <section id="how" class="wrap how">
   <div class="section-head">
@@ -11,11 +12,11 @@ import Key from '../Key.astro';
     <li>
       <span class="num">1</span>
       <h3>Right-click anywhere</h3>
-      <p>Pick <i>Add sticky note here</i> from the browser’s own menu - it lives right between Print and Inspect.</p>
+      <p>Pick <i>Add sticky note here</i> from the browser&rsquo;s own menu - it lives right between Print and Inspect.</p>
       <div class="ctx menu" aria-hidden="true">
-        <div class="ctx-item">Print…</div>
+        <div class="ctx-item">Print&hellip;</div>
         <div class="ctx-sep"></div>
-        <div class="ctx-hot"><span class="tile mini"><Icon name="sticky-note" size={11} stroke={2.4} /></span>Add sticky note here</div>
+        <div class="ctx-hot"><span class="tile mini"><img src={href('favicon.svg')} width="16" height="16" alt="" /></span>Add sticky note here</div>
         <div class="ctx-sep"></div>
         <div class="ctx-item">Inspect</div>
       </div>
@@ -29,7 +30,7 @@ import Key from '../Key.astro';
     <li>
       <span class="num">3</span>
       <h3>Write, flip, forget</h3>
-      <p>Markdown while you edit, neatly set in preview. Pick a color. Close the tab - the note will be there when you’re back.</p>
+      <p>Markdown while you edit, neatly set in preview. Pick a color. Close the tab - the note will be there when you&rsquo;re back.</p>
       <div class="flip" aria-hidden="true">
         <div class="mini-note mono">**Gift ideas**<br />- [x] Book<br />- [ ] Plant</div>
         <Icon name="arrow-right" size={16} color="var(--color-accent-700)" />
