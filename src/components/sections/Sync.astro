@@ -1,3 +1,9 @@
+---
+/**
+ * Sync and Drive backup section. The storage meter is illustrative sample
+ * data; arrivals animates the bar when it scrolls into view.
+ */
+---
 <section id="sync" class="wrap sync">
   <div class="section-head">
     <div class="kicker">Sync &amp; backup</div>
@@ -7,6 +13,7 @@
     <div class="col">
       <h3>Browser sync, out of the box</h3>
       <p class="prose">Signed into your browser? Then your notes already sync to your other computers - nothing to set up. Browsers give each extension 100 KB of sync space, which is roughly 250 short notes.</p>
+      <!-- data-arrive triggers the fill animation; 72 KB is sample content, not live storage. -->
       <div class="meter" data-arrive>
         <div class="meter-row tnum"><span>Browser sync space</span><span><span data-count>72</span> of 100 KB</span></div>
         <div class="bar" role="img" aria-label="About 72% of 100 KB used"><div class="used"></div><div class="free"></div></div>

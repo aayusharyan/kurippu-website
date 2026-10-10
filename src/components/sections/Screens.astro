@@ -1,10 +1,15 @@
 ---
-// Static mocks of the toolbar popup and the options page. Both are still being designed, so a seed note
-// ("w1" in scripts/notes/seeds.ts) is pinned to this section to say so; the <noscript> line covers no-JS visitors.
+/**
+ * Static mocks of the toolbar popup and options page. A seed note (w1 in
+ * scripts/notes/seeds.ts) pins to data-scope="screens" to mark them unfinished;
+ * the <noscript> line covers visitors without JS.
+ */
 import Icon from '../Icon.astro';
 import { href } from '../../config';
 
+/** Inline swatch color for a note hue in the popup list. */
 const dot = (h: number) => `background:oklch(0.82 0.09 ${h})`;
+/** Paper fill and top stripe for a card in the options mock. */
 const paper = (h: number) => `background:oklch(0.93 0.05 ${h});border-top-color:oklch(0.89 0.065 ${h})`;
 
 const onPage = [
@@ -25,6 +30,7 @@ const sidebar = [
     <h2 class="h2">Two more places your notes live.</h2>
     <noscript><p class="status">Mockups. The extension is still being built, so the finished screens may look different.</p></noscript>
   </div>
+  <!-- Narrow-layout home for the in-development seed note. -->
   <div class="flow" data-flow="screens" hidden></div>
   <div class="row">
     <figure class="popup-col">
@@ -115,7 +121,7 @@ const sidebar = [
   .cap h3 { margin: 0; font: 600 21px/1.2 var(--font-heading); letter-spacing: normal; }
   .cap p { margin: 0; font-size: 14px; line-height: 1.6; text-wrap: pretty; }
 
-  /* - popup - */
+  /* Toolbar popup chrome for the static mock. */
   .popup {
     max-width: 340px;
     background: var(--color-bg);
@@ -160,7 +166,7 @@ const sidebar = [
     color: var(--color-neutral-700);
   }
 
-  /* - options page - */
+  /* Options-page chrome for the static mock. */
   .options {
     display: flex;
     flex-wrap: wrap;

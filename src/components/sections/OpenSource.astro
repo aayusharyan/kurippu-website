@@ -1,7 +1,10 @@
 ---
+/**
+ * Open-source pitch: three static talking points plus a GitHub link.
+ * Bodies use HTML entities and render with set:html; never put visitor text here.
+ */
 import Icon from '../Icon.astro';
 
-// Static copy rendered with set:html, so typographic characters are written as HTML entities.
 const points = [
   ['Free, without a catch', 'No plans, no &ldquo;pro&rdquo;, no trial, no ads. There&rsquo;s no server to pay for, and no stored copy of your notes to sell.'],
   ['Check it yourself', 'No Backend server, no analytics in the extension, and no permissions beyond the ones listed in the privacy policy. You don&rsquo;t have to believe any of it: the source is there to confirm it.'],
@@ -15,6 +18,7 @@ const points = [
     <p class="prose">A privacy page is only words. Kurippu is free and open source, so anyone can see what the extension stores, what it asks your browser for and where it connects.</p>
   </div>
   <div class="cols">
+    {/* Headings are plain text; bodies are trusted static copy that need set:html for entities. */}
     {points.map(([h, t]) => (
       <div class="col">
         <h3>{h}</h3>

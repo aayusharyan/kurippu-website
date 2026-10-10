@@ -1,8 +1,11 @@
 ---
+/**
+ * Privacy highlights panel: short lede, policy link, and a checklist that
+ * scrolls in via arrivals. Point bodies are static copy with entities via set:html.
+ */
 import Icon from '../Icon.astro';
 import { href } from '../../config';
 
-// Static copy rendered with set:html, so typographic characters are written as HTML entities.
 const points = [
   'No account with us. Google sign-in talks straight to your Drive.',
   'Backups are encrypted on your device before they leave it.',
@@ -20,6 +23,7 @@ const points = [
       <p>Your notes live in your browser and, if you want, your Google Drive. There is no server in between to leak, sell or lose them.</p>
       <a class="more" href={href('privacy/')}>Read the privacy policy <Icon name="arrow-right" size={14} /></a>
     </div>
+    <!-- data-arrive: arrivals.ts reveals the list; --i staggers each row. -->
     <ul data-arrive>
       {points.map((t, i) => <li style={`--i:${i}`}><Icon name="check" color="var(--color-accent-700)" /><span set:html={t} /></li>)}
     </ul>

@@ -1,8 +1,10 @@
 ---
-// "Websites redesign" demo: a small mock site with two layouts of the same height. The notes
-// board (scripts/notes/board.ts) plays the redesign once when this scrolls into view, then
-// rings the button (data-demo-action) that replays it. [data-flip] marks each block that is
-// animated between layouts ("move" travels, "fade" cross-fades); [data-scope] marks the two that seed notes are pinned to.
+/**
+ * Layout-change demo: a mock site with two equal-height grids. The notes board
+ * (scripts/notes/board.ts) plays the redesign once on scroll-in, then enables
+ * the replay button. [data-flip] marks blocks that move or fade; [data-scope]
+ * marks the two anchors seed notes pin to.
+ */
 
 const steps = [
   ['1', 'Grind', 'Medium-fine, like table salt.'],
@@ -16,8 +18,10 @@ const steps = [
     <h2 class="h2">Websites redesign. Your notes don&rsquo;t mind.</h2>
     <p class="prose">Each note remembers the bit of the page it&rsquo;s stuck to, plus where it sat. When the layout changes, every note moves with what it&rsquo;s pinned to and settles into its new spot.</p>
     <div class="actions">
+      <!-- Board enables this after the first auto play and re-runs the redesign on click. -->
       <button class="btn btn-primary" type="button" data-analytics-id="demo-redesign" data-demo-action="redesign" disabled>Undo the redesign</button>
     </div>
+    <!-- Live region: board swaps the status copy without changing layout height. -->
     <div class="status" data-demo-status aria-live="polite">Redesigned. Both notes followed what they were pinned to.</div>
   </div>
   <div class="browser">
@@ -25,6 +29,7 @@ const steps = [
       <span class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></span>
       <span class="browser-url">brew.yush.dev/filter-coffee</span>
     </div>
+    <!-- Demo page scope: seed notes and redesign FLIP both target this tree. -->
     <div class="page" data-scope="demo" data-demo>
       <div class="mock">
         <div class="m-nav" data-flip="move">
@@ -42,6 +47,7 @@ const steps = [
         <!-- A span, not a button: it is part of the mock, and notes can be stuck on it. -->
         <span class="m-buy" data-flip="move" data-scope="demo-buy">Buy the kettle &middot; $48</span>
         <div class="m-steps">
+          {/* Static brew steps for the mock sidebar / row; not live content. */}
           {steps.map(([n, title, body]) => (
             <div class="m-step" data-flip="fade">
               <span class="m-num">{n}</span>

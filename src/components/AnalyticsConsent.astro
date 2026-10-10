@@ -1,6 +1,12 @@
 ---
+/**
+ * Consent panel and client script for optional Google Analytics.
+ * In development the panel always shows and never persists a choice or loads GA.
+ * In production, accepted consent configures gtag with ads/signals off and loads the script once.
+ */
 import { href } from '../config';
 
+/** measurementId is the GA4 ID; isDevelopment flips the no-persist, no-load path. */
 interface Props {
   measurementId: string;
   isDevelopment: boolean;
@@ -47,6 +53,7 @@ const { measurementId, isDevelopment } = Astro.props;
     font-family: var(--font-body);
   }
   .consent[hidden] { display: none; }
+  /* is-visible / is-leaving drive enter and exit; reduced motion drops both. */
   .consent.is-visible { animation: consent-in 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
   .consent.is-leaving {
     animation: consent-out 0.16s ease-in both;
@@ -72,6 +79,7 @@ const { measurementId, isDevelopment } = Astro.props;
 </style>
 
 <script>
+  // Versioned localStorage key and gtag window shape used by the helpers below.
   const CONSENT_KEY = 'kurippu-site-google-analytics-consent-v1';
   type Choice = 'accepted' | 'declined';
   type Gtag = (...args: unknown[]) => void;
@@ -86,6 +94,7 @@ const { measurementId, isDevelopment } = Astro.props;
   const trackingEnabled = panel?.dataset.trackingEnabled === 'true';
   let hideSequence = 0;
 
+  /** Returns a stored choice, or null when missing, invalid, or storage throws. */
   const readChoice = (): Choice | null => {
     try {
       const value = localStorage.getItem(CONSENT_KEY);
@@ -95,10 +104,15 @@ const { measurementId, isDevelopment } = Astro.props;
     }
   };
 
+  /** Persists a choice; ignores quota or privacy-mode write failures. */
   const writeChoice = (choice: Choice) => {
     try { localStorage.setItem(CONSENT_KEY, choice); } catch {}
   };
 
+  /**
+   * Installs gtag once: default consent denied, then analytics granted with ads/signals off.
+   * Skips when tracking is off, the ID is missing, or the script tag already exists.
+   */
   const configureAnalytics = () => {
     if (!trackingEnabled || !measurementId || document.querySelector('[data-google-analytics-script]')) return;
     const analyticsWindow = window as AnalyticsWindow;
@@ -125,6 +139,7 @@ const { measurementId, isDevelopment } = Astro.props;
     document.head.append(script);
   };
 
+  /** Reveals the panel and forces a reflow so the entrance animation can replay. */
   const showPanel = () => {
     if (!panel) return;
     hideSequence += 1;
@@ -135,6 +150,10 @@ const { measurementId, isDevelopment } = Astro.props;
     panel.classList.add('is-visible');
   };
 
+  /**
+   * Plays the leave animation, then hides. hideSequence drops stale finish callbacks
+   * if show/hide races. Reduced motion finishes immediately.
+   */
   const hidePanel = (after?: () => void) => {
     if (!panel || panel.hidden) {
       after?.();
@@ -153,10 +172,13 @@ const { measurementId, isDevelopment } = Astro.props;
     else panel.addEventListener('animationend', finish, { once: true });
   };
 
+  // Dev always shows the panel; production loads GA if accepted, else asks when unset.
   if (isDevelopment) showPanel();
   else if (readChoice() === 'accepted') configureAnalytics();
   else if (readChoice() === null) showPanel();
 
+  // Settings reopen the panel. Accept/decline are no-ops for persistence in dev.
+  // Revoking a prior accept denies consent again and reloads after hide.
   settings.forEach((button) => button.addEventListener('click', showPanel));
   accept?.addEventListener('click', () => {
     if (isDevelopment) {
@@ -185,6 +207,10 @@ const { measurementId, isDevelopment } = Astro.props;
     } else hidePanel();
   });
 
+  /**
+   * Delegated click tracker for anchors and buttons. Uses data-analytics-* when present,
+   * otherwise derives event name and content_id from element type and href.
+   */
   document.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return;
     const target = event.target.closest<HTMLAnchorElement | HTMLButtonElement>('a, button');
