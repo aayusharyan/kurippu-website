@@ -2,6 +2,7 @@
 /**
  * Opening hero and live demo zone. Seed notes pin to data-scope="hero-a".
  * On wide screens they sit absolutely; under 1180px they move into the flow slot.
+ * From 760px up that slot sits beside the copy so small laptops keep a two-column hero.
  */
 import Key from '../Key.astro';
 ---
@@ -87,9 +88,44 @@ import Key from '../Key.astro';
   .keys { display: inline-flex; align-items: center; gap: 8px; }
   .flow {
     display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 20px;
     margin-top: 40px;
   }
   .flow[hidden] { display: none; }
+
+  /*
+   * Small laptops (and anything between phone and the absolute breakpoint): put the
+   * flow notes in a right column so the hero still reads as copy + demo, not a wrap.
+   */
+  @media (min-width: 760px) and (max-width: 1179.98px) {
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 232px;
+      column-gap: clamp(20px, 3vw, 36px);
+      align-items: start;
+      min-height: 0;
+      padding-bottom: 72px;
+    }
+    .copy {
+      max-width: none;
+      min-width: 0;
+    }
+    .lead, .hint { max-width: none; }
+    .flow {
+      margin-top: 4px;
+      justify-self: end;
+      align-items: flex-end;
+      width: 232px;
+    }
+    /* Stagger inside the column (right-aligned) so nothing spills past the wrap edge. */
+    .flow :global(.note-slot:nth-child(1)) { margin-right: 16px; }
+    .flow :global(.note-slot:nth-child(3)) { margin-right: 8px; }
+  }
+
+  @media (max-width: 1179.98px) {
+    .hero { min-height: 0; }
+  }
 </style>
