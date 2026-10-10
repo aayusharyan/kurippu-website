@@ -6,6 +6,7 @@ name: Create Release
 on:
   workflow_dispatch:
     inputs:
+      # Only minor and major bumps; patch is unused so every release is X.Y.0.
       version_bump:
         description: Version bump type
         required: true
@@ -15,6 +16,7 @@ on:
           - major
         default: minor
 
+# One release at a time. Do not cancel a run mid-deploy if another is queued.
 concurrency:
   group: release
   cancel-in-progress: false
@@ -23,6 +25,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
+    # Needed to push the version commit, annotated tag, and GitHub Release.
     permissions:
       contents: write
 
@@ -90,6 +93,7 @@ jobs:
         run: |
           npm version "$VERSION" --no-git-tag-version
 
+          # Confirm package.json and both lockfile version fields match the bump.
           package_version=$(node --print "require('./package.json').version")
           lock_version=$(node --print "require('./package-lock.json').version")
           root_lock_version=$(node --print "require('./package-lock.json').packages[''].version")
@@ -189,6 +193,7 @@ jobs:
           PREVIOUS_TAG: ${{ steps.version.outputs.previous_tag }}
           ASSET: ${{ steps.package.outputs.asset }}
         run: |
+          # Bound generated notes to the previous tag when one exists.
           notes_args=()
           if [[ -n "$PREVIOUS_TAG" ]]; then
             notes_args+=(--notes-start-tag "$PREVIOUS_TAG")
