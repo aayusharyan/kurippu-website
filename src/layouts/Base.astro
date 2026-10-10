@@ -1,4 +1,8 @@
 ---
+/**
+ * Root HTML layout: global styles, meta tags, optional JSON-LD, favicons,
+ * a blocking platform class for key labels, and the consent-gated analytics panel.
+ */
 import '../styles/fonts.css';
 import '../styles/classical.css';
 import '../styles/global.css';
@@ -24,6 +28,7 @@ const DEFAULT_IMAGE_ALT = 'The headline &ldquo;Stick a note on any website.&rdqu
 const NAMED_ENTITIES: Record<string, string> = {
   rsquo: '’', ldquo: '“', rdquo: '”', hellip: '…', middot: '·', copy: '©', larr: '←', amp: '&', lt: '<', gt: '>', quot: '"',
 };
+/** Turn &name;, &#digits; and &#xhex; into real characters for <title> and meta attributes. */
 const decodeEntities = (text: string) =>
   text.replace(/&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi, (match, dec, hex, name) =>
     dec ? String.fromCodePoint(Number(dec)) : hex ? String.fromCodePoint(parseInt(hex, 16)) : NAMED_ENTITIES[name] ?? match);

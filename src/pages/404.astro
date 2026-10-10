@@ -1,6 +1,9 @@
 ---
-// Served by the host for any unknown URL (Firebase Hosting uses dist/404.html), so every link and
-// asset here must be root-relative: use href(), never a path relative to the page.
+/**
+ * Host fallback for any unknown URL (Firebase Hosting serves dist/404.html).
+ * Links and assets must be root-relative via href(); paths relative to the page would break.
+ * canonical is false because this markup is served under many addresses.
+ */
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import SiteFooter from '../components/SiteFooter.astro';

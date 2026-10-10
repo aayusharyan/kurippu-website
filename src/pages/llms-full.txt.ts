@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
 import { absoluteUrl } from '../config';
 
-// The long form of llms.txt: one plain-text file an AI agent can read to understand the whole
-// product. The facts are copied by hand from the landing page (src/components/sections/) and the
-// privacy policy (src/pages/privacy.astro). When that copy changes, change this file too, and
-// never claim more than the site does. Keep to facts: no competitor comparisons or superlatives.
+// Long-form plain-text description for AI agents. Facts are copied by hand from the
+// landing page and privacy policy; keep them in sync and never claim more than the site.
+
+/** Build /llms-full.txt as UTF-8 plain text with absolute URLs from `site`. */
 export const GET: APIRoute = ({ site }) => {
   const body = `# Kurippu
 

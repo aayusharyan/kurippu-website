@@ -1,5 +1,8 @@
 ---
-// Platform-aware modifier label: ⌘/⌥ on Apple platforms, Ctrl/Alt elsewhere.
+/**
+ * Modifier key label that shows both Mac and PC text; CSS picks which span is visible.
+ * alt switches ⌘/Ctrl to ⌥/Alt. Entities keep the Apple symbols portable in markup.
+ */
 interface Props { alt?: boolean }
 const { alt = false } = Astro.props;
 ---

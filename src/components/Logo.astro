@@ -1,4 +1,8 @@
 ---
+/**
+ * Brand link used in the header and elsewhere.
+ * Defaults to the site root plus #top; the favicon is decorative (empty alt) beside the wordmark.
+ */
 import { href } from '../config';
 
 interface Props { to?: string }
@@ -37,6 +41,7 @@ const { to = href() + '#top' } = Astro.props;
   .word { font: 600 25px/1 var(--font-heading); }
   .mark { font-size: 12px; color: var(--color-neutral-700); letter-spacing: 0.02em; }
 
+  /* Hover/active tile motion is disabled when the visitor prefers reduced motion. */
   @media (prefers-reduced-motion: reduce) {
     .tile { transition: none; }
   }

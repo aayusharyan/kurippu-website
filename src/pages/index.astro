@@ -1,4 +1,8 @@
 ---
+/**
+ * Landing page: section composition, schema.org JSON-LD, and the live note demo surface.
+ * The page itself is the note board; sections are composed below in reading order.
+ */
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -17,9 +21,10 @@ import Install from '../components/sections/Install.astro';
 import { absoluteUrl, href } from '../config';
 import '../styles/notes.css';
 
+// Literal characters only (no HTML entities): this object is stringified into JSON-LD,
+// where an entity would show up as text. Facts are copied from this page's own copy.
 const description = 'Kurippu is a free, open-source Chrome extension for sticking notes on any website. Right-click, write, done - your note comes back exactly where you left it.';
 
-// Structured data for search engines and AI agents. Facts only, copied from this page's own copy.
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
@@ -106,6 +111,7 @@ const jsonLd = {
   }
 </style>
 
+<!-- Client mounts: sticky-note board on the page scope, plus one-shot scroll-in arrivals. -->
 <script>
   import { mountBoard } from '../scripts/notes/board';
   import { mountArrivals } from '../scripts/arrivals';

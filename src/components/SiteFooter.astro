@@ -1,8 +1,13 @@
 ---
+/**
+ * Site footer: nav links, optional Analytics settings control, and copyright with version.
+ * newTab opens external links in a new window with rel=noopener noreferrer.
+ */
 import { GOOGLE_ANALYTICS_ID, SITE_VERSION } from '../config';
 
 interface Props { links: { label: string; href: string; newTab?: boolean }[] }
 const { links } = Astro.props;
+// Shown in dev always, or in production when a measurement ID is configured.
 const hasAnalyticsChoices = import.meta.env.DEV || !!GOOGLE_ANALYTICS_ID;
 // Evaluated at build time (static output), so the year is the year of the deploy.
 const year = new Date().getFullYear();
@@ -10,6 +15,7 @@ const year = new Date().getFullYear();
 <footer>
   <div class="wrap row">
     {links.map((l) => <a href={l.href} target={l.newTab ? '_blank' : undefined} rel={l.newTab ? 'noopener noreferrer' : undefined}>{l.label}</a>)}
+    {/* data-analytics-settings is the hook AnalyticsConsent listens for. */}
     {hasAnalyticsChoices && <button type="button" data-analytics-id="footer-analytics-settings" data-analytics-settings>Analytics settings</button>}
     <span class="copy">&copy; {year} Kurippu ({SITE_VERSION})</span>
   </div>

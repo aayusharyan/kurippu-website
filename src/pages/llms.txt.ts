@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
 import { absoluteUrl } from '../config';
 
-// The llms.txt convention (llmstxt.org): a short Markdown index for AI agents. The facts are
-// copied by hand from the landing page and the privacy policy. When that copy changes, change
-// this file and llms-full.txt too, and never claim more than the site does.
+// Short Markdown index (llmstxt.org) for AI agents. Facts are copied by hand from the
+// landing page and privacy policy; keep them in sync with llms-full.txt too.
+
+/** Build /llms.txt as UTF-8 plain text with absolute URLs from `site`. */
 export const GET: APIRoute = ({ site }) => {
   const body = `# Kurippu
 
