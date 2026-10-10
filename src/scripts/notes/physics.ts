@@ -27,11 +27,16 @@ export interface Swing {
   scV: number;
 }
 
+/** Fresh swing state at rest, optionally grabbed at `(gx, gy)` from the note centre. */
 export const newSwing = (gx = 0, gy = 0): Swing => ({ gx, gy, vx: 0, vy: 0, pvx: 0, pvy: 0, ang: 0, angV: 0, sc: 1, scV: 0 });
 
+/** Keep `v` inside `[lo, hi]`. */
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
-/** A CSS cubic-bezier() timing function as a plain function of progress 0..1. */
+/**
+ * A CSS cubic-bezier() timing function as a plain function of progress 0..1.
+ * Bezier control points are in x/y; binary search finds t for a given x, then samples y.
+ */
 export function bezier(x1: number, y1: number, x2: number, y2: number) {
   const at = (a: number, b: number, t: number) => 3 * a * (1 - t) * (1 - t) * t + 3 * b * (1 - t) * t * t + t * t * t;
   return (x: number) => {
@@ -46,7 +51,10 @@ export function bezier(x1: number, y1: number, x2: number, y2: number) {
   };
 }
 
-/** Advance angle and scale by `dt` seconds. Returns true once both are at rest. */
+/**
+ * Advance angle and scale by `dt` seconds. Returns true once both are at rest.
+ * Scale springs toward a slight lift while held, and back to 1 when released.
+ */
 export function stepSwing(s: Swing, dt: number, held: boolean): boolean {
   const ax = clamp((s.vx - s.pvx) / dt, -20000, 20000);
   const ay = clamp((s.vy - s.pvy) / dt, -20000, 20000);

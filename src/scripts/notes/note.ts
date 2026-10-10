@@ -10,6 +10,7 @@ export interface NoteApi {
   startDrag(id: string, e: PointerEvent): void;
 }
 
+/** Create an element, optionally with a class and textContent (never HTML). */
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) => {
   const el = document.createElement(tag);
   if (cls) el.className = cls;
@@ -17,6 +18,7 @@ const h = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: s
   return el;
 };
 
+/** Renders one note card and wires band, edit/preview, delete, and drag intents. */
 export class NoteView {
   /** Positioned wrapper the board moves between containers. */
   readonly slot = h('div', 'note-slot');
@@ -28,6 +30,7 @@ export class NoteView {
   private note: Note;
   private rendered: { mode?: Note['mode']; text?: string; hue?: number } = {};
 
+  /** Build the band chrome once; later updates only refresh body content. */
   constructor(note: Note, private api: NoteApi, private mod: string) {
     this.note = note;
     this.el.dataset.note = '';
@@ -60,6 +63,7 @@ export class NoteView {
     del.addEventListener('click', () => api.remove(id()));
   }
 
+  /** Sync visual props and rebuild edit or preview when mode/text/hue need it. */
   update(note: Note, { focus = false } = {}) {
     const prev = this.rendered;
     this.note = note;
@@ -104,6 +108,7 @@ export class NoteView {
     style.setProperty('--sc', t.sc.toFixed(4));
   }
 
+  /** Mount textarea, colour swatches, and Escape / mod+Enter to leave edit. */
   private renderEdit() {
     const ta = h('textarea');
     ta.placeholder = 'Write in Markdown…';
@@ -137,12 +142,17 @@ export class NoteView {
     this.body.replaceChildren(ta, foot);
   }
 
+  /** Mark which swatch matches the current hue for aria-pressed. */
   private markSwatch(hue: number) {
     this.body.querySelectorAll<HTMLButtonElement>('.note-swatch').forEach((s) => {
       s.setAttribute('aria-pressed', String(s.dataset.hue === String(hue)));
     });
   }
 
+  /**
+   * Parse Markdown into preview nodes. Todo rows keep focus across rebuilds via data-line.
+   * Space and Enter toggle a focused checkbox the same way a click does.
+   */
   private renderPreview(text: string) {
     this.textarea = null;
     const lines = parse(text);
