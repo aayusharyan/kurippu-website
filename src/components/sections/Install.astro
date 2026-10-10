@@ -1,11 +1,18 @@
 ---
+/**
+ * Closing install CTA. The notes board fills the paper-chip stack; the button
+ * rings on the visitor's fifth note. Fine print covers other Chromium browsers
+ * and may change as notes accumulate.
+ */
 ---
 <section id="install" class="wrap install">
   <!-- One paper chip per note on the page; filled in by the notes board (scripts/notes/board.ts). -->
   <div class="stack" data-note-stack aria-hidden="true"></div>
   <h2>Go stick something.</h2>
+  <!-- Board targets this CTA for the fifth-note ring animation. -->
   <a class="btn btn-primary big" href="https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh" data-install-cta data-analytics-event="select_content" data-analytics-placement="install">Add Kurippu to Chrome</a>
   <div class="fines">
+    <!-- Board swaps this line as the visitor adds notes; falls back to the markup text. -->
     <div class="fine" data-note-fine>Also installs on Edge and Brave from the Chrome Web Store.</div>
     <div class="fine">Free and open source. <a href="https://github.com/aayusharyan/kurippu" target="_blank" rel="noopener noreferrer">Read the code on GitHub</a>.</div>
   </div>
