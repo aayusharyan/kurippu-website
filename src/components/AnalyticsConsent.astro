@@ -83,7 +83,8 @@ const { measurementId, isDevelopment } = Astro.props;
   const CONSENT_KEY = 'kurippu-site-google-analytics-consent-v1';
   type Choice = 'accepted' | 'declined';
   type Gtag = (...args: unknown[]) => void;
-  type AnalyticsWindow = Window & { dataLayer?: unknown[][]; gtag?: Gtag };
+  // dataLayer holds Arguments command queues, gtag-added event objects, and similar entries.
+  type AnalyticsWindow = Window & { dataLayer?: unknown[]; gtag?: Gtag };
 
   const panel = document.querySelector<HTMLElement>('[data-analytics-consent]');
   const accept = panel?.querySelector<HTMLButtonElement>('[data-analytics-accept]');
@@ -117,7 +118,14 @@ const { measurementId, isDevelopment } = Astro.props;
     if (!trackingEnabled || !measurementId || document.querySelector('[data-google-analytics-script]')) return;
     const analyticsWindow = window as AnalyticsWindow;
     analyticsWindow.dataLayer ||= [];
-    analyticsWindow.gtag ||= (...args: unknown[]) => { analyticsWindow.dataLayer?.push(args); };
+    // gtag.js only runs dataLayer entries that are real Arguments objects. Pushing a
+    // rest-parameter Array looks identical in the console but is silently ignored, so
+    // no /g/collect hits are sent. A normal function keeps a genuine arguments object.
+    if (!analyticsWindow.gtag) {
+      analyticsWindow.gtag = function gtag(..._args: unknown[]) {
+        analyticsWindow.dataLayer?.push(arguments);
+      };
+    }
     analyticsWindow.gtag('consent', 'default', {
       ad_storage: 'denied',
       ad_user_data: 'denied',
