@@ -1,3 +1,9 @@
+/* Self-hosted @font-face rules for the heading and body families. Only the
+   weights and styles in use ship as local TTF files. font-display: swap shows
+   the system-ui fallback from classical.css until each face loads. Licenses
+   live in THIRD_PARTY_NOTICES.md. */
+
+/* Cormorant Garamond: heading face (regular, italic, semibold). */
 @font-face {
   font-family: 'Cormorant Garamond';
   font-style: italic;
@@ -19,6 +25,8 @@
   font-display: swap;
   src: url(../assets/fonts/cormorant-garamond-600-normal.ttf) format('truetype');
 }
+
+/* Lora: body face (regular, italic, semibold). */
 @font-face {
   font-family: 'Lora';
   font-style: italic;

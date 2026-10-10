@@ -1,3 +1,6 @@
+# Shared editor defaults for indentation, line endings, and charset.
+# Markdown keeps trailing whitespace so intentional line breaks stay intact.
+
 root = true
 
 [*]

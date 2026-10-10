@@ -4,7 +4,10 @@
 
 const DURATION = 1100; // matches the sync meter's fill
 
-/** Count a [data-count] figure up from 0 to the number in its markup. */
+/**
+ * Count a [data-count] figure up from 0 to the number in its markup.
+ * Progress uses ease-out cubic so the last digits linger.
+ */
 function countUp(el: HTMLElement) {
   const target = Number(el.textContent);
   if (!Number.isFinite(target)) return;
@@ -17,6 +20,10 @@ function countUp(el: HTMLElement) {
   requestAnimationFrame(step);
 }
 
+/**
+ * Watch [data-arrive] nodes and fire each once they enter view.
+ * Skips entirely when IntersectionObserver is missing or reduced motion is on.
+ */
 export function mountArrivals() {
   if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   document.documentElement.classList.add('has-arrivals');

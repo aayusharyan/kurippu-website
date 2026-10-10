@@ -1,8 +1,11 @@
+// Astro site config for a fully static build.
+// `site` is the public origin used wherever absolute URLs are required.
+
 import { defineConfig } from 'astro/config';
 
-// `site` is the public origin. sitemap.xml, robots.txt, llms.txt and the og:image tags are all
-// built from it, because crawlers need absolute URLs.
+// Sitemap, robots.txt, llms.txt, and og:image tags all expand from this origin.
 export default defineConfig({
   site: 'https://kurippu.yush.dev',
+  // No server runtime: every page is pre-rendered into dist/.
   output: 'static',
 });

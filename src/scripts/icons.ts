@@ -10,5 +10,6 @@ export const ICONS = {
 
 export type IconName = keyof typeof ICONS;
 
+/** Wrap a Lucide path set in a complete SVG string for innerHTML use. */
 export const svg = (name: IconName, size: number, stroke = 2) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;

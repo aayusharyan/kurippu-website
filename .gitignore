@@ -1,6 +1,15 @@
+# Ignore install folders, build output, and local Firebase tooling artifacts.
+
+# Installed dependencies (recreated by npm install / npm ci).
 node_modules/
+
+# Astro build output and generated type cache.
 dist/
 .astro/
+
+# Local Firebase CLI state (never commit emulator or login cache).
 .firebase/
+
+# Firebase CLI debug logs written next to the project root.
 firebase-debug.log
 firebase-debug.*.log

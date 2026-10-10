@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import { absoluteUrl } from '../config';
 
-// The site wants to be found, by search engines and by AI assistants alike. "Allow: /" for
-// everyone already covers the AI crawlers; they are listed anyway so the intent is explicit and
+// robots.txt: allow the whole site for search engines and AI assistants, and point at the sitemap.
+// "Allow: /" for * already covers the AI crawlers; they are listed so intent stays explicit and
 // a future blanket rule cannot shut them out by accident.
 const aiAgents = [
   'GPTBot',
@@ -20,6 +20,7 @@ const aiAgents = [
   'meta-externalagent',
 ];
 
+/** Build /robots.txt as UTF-8 plain text with absolute sitemap and llms.txt URLs. */
 export const GET: APIRoute = ({ site }) => {
   const body = `# Kurippu is a free, open-source Chrome extension for sticking notes on any website.
 # Plain-text summary for AI agents: ${absoluteUrl(site, 'llms.txt')}
