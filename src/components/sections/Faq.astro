@@ -1,11 +1,9 @@
 ---
-
 /**
- * FAQ accordion section. Each item is a native <details> that animates
- * open and closed via ::details-content height/opacity transitions.
- * An answer is a string, or a list of strings and links.
- * Questions and answers are static copy rendered with set:html, so typographic
- * characters are written as HTML entities. Never put visitor-entered text here.
+ * FAQ accordion of native <details> items. Open and close animate via
+ * ::details-content height and opacity. An answer is a string, or a list of
+ * strings and link objects. Static copy uses set:html for entities; never put
+ * visitor-entered text here.
  */
 type Answer = string | (string | { text: string; href: string })[];
 
@@ -32,6 +30,7 @@ const faqs: [string, Answer][] = [
       <details>
         <summary set:html={q} />
         <div class="answer">
+          {/* Static strings use set:html so entities decode; link objects become real anchors. */}
           {(typeof a === 'string' ? [a] : a).map((part) => (typeof part === 'string' ? <Fragment set:html={part} /> : <a href={part.href} target="_blank" rel="noopener noreferrer">{part.text}</a>))}
         </div>
       </details>
