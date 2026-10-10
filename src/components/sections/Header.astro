@@ -1,4 +1,8 @@
 ---
+/**
+ * Top navigation: logo, section links, live note-count badge, and install CTA.
+ * The count stays hidden until the notes board reveals and updates it.
+ */
 import Logo from '../Logo.astro';
 import { href } from '../../config';
 ---
@@ -11,7 +15,7 @@ import { href } from '../../config';
     <a href="#open-source">Open source</a>
     <a href="#faq">FAQ</a>
   </nav>
-  <!-- Filled in by the notes board (scripts/notes/board.ts): every note on the page, seeds included. -->
+  <!-- Notes board (scripts/notes/board.ts) fills the number, unhides the badge, and toggles bump/roll classes. -->
   <span class="count tnum" data-note-count hidden>
     <span class="count-icon"><img src={href('favicon.svg')} width="19" height="19" alt="" /></span>
     <span class="count-text">
@@ -70,6 +74,7 @@ import { href } from '../../config';
     gap: 4px;
     padding: 0 10px 0 7px;
   }
+  /* Board-driven motion when the total grows (bump) or the digit changes (roll/tick). */
   .count.is-bumping { animation: count-bump 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
   .num { display: inline-block; }
   .num.is-rolling { animation: count-roll 0.22s cubic-bezier(0.2, 0.7, 0.2, 1); }
