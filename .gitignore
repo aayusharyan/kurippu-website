@@ -13,3 +13,6 @@ dist/
 # Firebase CLI debug logs written next to the project root.
 firebase-debug.log
 firebase-debug.*.log
+
+# macOS Finder metadata files.
+.DS_Store
