@@ -9,6 +9,10 @@ export type Line =
 /** Strip inline **, *, `, __ markers. */
 const clean = (s: string) => s.replace(/\*\*|`|__/g, '').replace(/(^|\s)\*(\S[^*]*)\*/g, '$1$2');
 
+/**
+ * Classify each non-empty line. Todo must run before plain list, or `[ ]` items become `li`.
+ * Headings accept `# …` or a whole-line `**bold**`.
+ */
 export function parse(text: string): Line[] {
   const lines: Line[] = [];
   text.split('\n').forEach((raw, index) => {
