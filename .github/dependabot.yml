@@ -1,3 +1,7 @@
+# Weekly Dependabot checks for npm packages and GitHub Actions.
+# Minor and patch updates share one PR per ecosystem so review stays light;
+# major bumps still open separately.
+
 version: 2
 
 updates:
