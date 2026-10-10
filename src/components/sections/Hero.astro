@@ -1,8 +1,11 @@
 ---
-// Hero 1a "Margin". A live demo zone: seed notes are mounted by the notes board,
-// absolutely positioned on wide screens, flowed into the row below the copy under 1180px.
+/**
+ * Opening hero and live demo zone. Seed notes pin to data-scope="hero-a".
+ * On wide screens they sit absolutely; under 1180px they move into the flow slot.
+ */
 import Key from '../Key.astro';
 ---
+<!-- Demo scope: seed notes mount here; data-demo marks the live interaction zone. -->
 <section id="hero" class="wrap hero" data-scope="hero-a" data-demo>
   <div class="copy">
     <div class="kicker">Free, open-source Chrome extension &middot; works on any website</div>
@@ -18,6 +21,7 @@ import Key from '../Key.astro';
       <span>anywhere on this page. Yes, anywhere.</span>
     </div>
   </div>
+  <!-- Narrow-screen home for seed notes when absolute placement is off. -->
   <div class="flow" data-flow="hero-a" hidden></div>
 </section>
 
@@ -57,6 +61,7 @@ import Key from '../Key.astro';
     stroke-linecap: round;
     stroke-dasharray: 1;
   }
+  /* Draw the underline only when the visitor has not asked to reduce motion. */
   @media (prefers-reduced-motion: no-preference) {
     .any path { animation: arrive-draw 0.5s ease-out 0.35s backwards; }
   }
