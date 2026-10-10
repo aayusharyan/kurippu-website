@@ -1,3 +1,6 @@
+# Website bug intake form for the landing page, privacy policy, and live demo.
+# Security or privacy reports belong in SECURITY.md, not in this tracker.
+
 name: Bug report
 description: Something on the website is broken or looks wrong
 labels: [bug]
