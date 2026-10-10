@@ -1,10 +1,12 @@
 /* Sticky notes, the demo context menu and the toast. Global because the notes board builds this DOM at runtime. */
 
 /* Notes sit at z 20+; menus and toasts at 1000 stay above them. */
+/* Absolute for pinned notes; .is-flow switches to relative for document flow slots. */
 .note-slot { position: absolute; }
 .note-slot.is-flow { position: relative; }
 
 .note {
+  /* Hue angle from JS (--h); paper and band share it so swatches stay consistent. */
   --h: 85;
   width: 232px;
   background: oklch(0.93 0.05 var(--h));
@@ -19,6 +21,7 @@
   transition: box-shadow 0.15s;
 }
 .note.is-lifted { box-shadow: var(--shadow-lg); }
+/* Short fade while the board removes a note from the DOM. */
 .note.is-leaving { animation: note-out 0.12s ease-in forwards; pointer-events: none; }
 @keyframes note-out { to { opacity: 0; } }
 
@@ -31,6 +34,7 @@
   padding: 0 4px 0 6px;
   cursor: grab;
   user-select: none;
+  /* Keep pointer events on the band; stop the page from scrolling while dragging. */
   touch-action: none;
   border-radius: 2px 2px 0 0;
 }
@@ -67,7 +71,7 @@
 }
 .note-del:hover { background: color-mix(in srgb, var(--color-text) 10%, transparent); }
 
-/* - edit mode - */
+/* Edit mode: monospace textarea and colour swatches along the foot. */
 .note textarea {
   display: block;
   width: 100%;
@@ -100,7 +104,7 @@
 }
 .note-hint { margin-left: auto; font-size: 11px; color: var(--color-neutral-700); }
 
-/* - preview mode - */
+/* Preview from markdown.ts: nodes are built with textContent-safe DOM APIs. */
 .note-preview {
   padding: 12px 16px 14px;
   font-size: 13px;
@@ -126,7 +130,7 @@
 .md-todo.is-done .md-todo-text { text-decoration: line-through; opacity: 0.6; }
 .md-empty { color: var(--color-neutral-600); font-style: italic; }
 
-/* - demo context menu and toast - */
+/* Demo menu and toast share z-index 1000 so they sit above every note. */
 .demo-menu {
   position: fixed;
   z-index: 1000;
@@ -214,7 +218,7 @@
   .note.is-leaving { animation: none; }
 }
 
-/* - note count: paper chips stacked above the install headline - */
+/* Paper chips in the install stack; --h/--rot come from the board's count UI. */
 .note-chip {
   width: 26px;
   height: 26px;

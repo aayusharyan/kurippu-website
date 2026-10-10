@@ -1,5 +1,6 @@
 /* Site-wide rules layered on top of the Classical design system (classical.css). */
 
+/* Smooth in-page anchors; prefers-reduced-motion below forces auto instead. */
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--color-bg); }
 a { color: var(--color-accent-700); }
@@ -10,7 +11,7 @@ summary::-webkit-details-marker { display: none; }
 html:not(.mac) [data-mac],
 html.mac [data-pc] { display: none; }
 
-/* - shared page furniture - */
+/* Shared page furniture: width, section titles, and typography helpers. */
 .wrap {
   max-width: 1180px;
   margin: 0 auto;
@@ -44,6 +45,7 @@ html.mac [data-pc] { display: none; }
   max-width: 640px;
 }
 
+/* Justified, hyphenated body copy for denser policy-style paragraphs. */
 .prose {
   margin: 0;
   text-align: justify;
@@ -80,7 +82,7 @@ html.mac [data-pc] { display: none; }
 }
 .tile svg { display: block; }
 
-/* Browser window mock */
+/* Decorative browser chrome for static product screenshots and mocks. */
 .browser {
   border: 1px solid var(--color-divider);
   border-radius: 7px;
@@ -143,8 +145,7 @@ html.mac [data-pc] { display: none; }
 }
 button.ctx-hot { cursor: pointer; }
 
-/* - small states: hover and press responses -
-   Ink moves left to right on hover; anything pressable sinks on press. */
+/* Small states: ink wipes left to right on hover; pressables sink on press. */
 .btn {
   background-image: linear-gradient(var(--btn-tint, transparent), var(--btn-tint, transparent));
   background-repeat: no-repeat;
@@ -207,6 +208,7 @@ a:where(:not(.btn)):active { color: var(--color-accent-800); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   .btn { transition: none; }
   .btn:active { transform: none; }
   a:where(:not(.btn)), .back, .back .arrow { transition: none; }
@@ -214,11 +216,11 @@ a:where(:not(.btn)):active { color: var(--color-accent-800); }
   .kbd-row:hover .kbd { animation: none; }
 }
 
-/* - arrivals: shared keyframes; each section applies them in its own styles (see scripts/arrivals.ts) - */
+/* Shared keyframes; section styles and scripts/arrivals.ts apply them locally. */
 @keyframes arrive-draw { from { stroke-dashoffset: 1; } }
 @keyframes arrive-rise { from { opacity: 0; transform: translateY(8px); } }
 
-/* - note count: shared keyframes (header chip, install ring) - */
+/* Count and CTA keyframes: header chip, install ring, redesign replay. */
 @keyframes count-bump { 40% { transform: scale(1.12); } }
 @keyframes count-roll { from { opacity: 0; transform: translateY(9px); } }
 /* One beat of a count-down: shorter and gentler than count-roll, because they fire ~45ms apart. */
