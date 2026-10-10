@@ -3,6 +3,7 @@
  * Consent panel and client script for optional Google Analytics.
  * In development the panel always shows and never persists a choice or loads GA.
  * In production, accepted consent configures gtag with ads/signals off and loads the script once.
+ * Reopening from Analytics settings swaps title, body and button labels to match the stored choice.
  */
 import { href } from '../config';
 
@@ -87,6 +88,8 @@ const { measurementId, isDevelopment } = Astro.props;
   type AnalyticsWindow = Window & { dataLayer?: unknown[]; gtag?: Gtag };
 
   const panel = document.querySelector<HTMLElement>('[data-analytics-consent]');
+  const title = panel?.querySelector<HTMLElement>('#analytics-consent-title');
+  const body = panel?.querySelector<HTMLParagraphElement>('.copy p');
   const accept = panel?.querySelector<HTMLButtonElement>('[data-analytics-accept]');
   const decline = panel?.querySelector<HTMLButtonElement>('[data-analytics-decline]');
   const settings = document.querySelectorAll<HTMLButtonElement>('[data-analytics-settings]');
@@ -94,6 +97,28 @@ const { measurementId, isDevelopment } = Astro.props;
   const isDevelopment = panel?.dataset.development === 'true';
   const trackingEnabled = panel?.dataset.trackingEnabled === 'true';
   let hideSequence = 0;
+
+  // First-ask copy matches the static markup; accepted/declined are for footer reopen.
+  const COPY: Record<'unset' | Choice, { title: string; body: string; decline: string; accept: string }> = {
+    unset: {
+      title: 'Optional analytics',
+      body: 'May we use Google Analytics cookies to understand how visitors find and use this website? Your page views, campaign details and button and link clicks are sent to Google. The extension has no analytics.',
+      decline: 'Decline',
+      accept: 'Allow analytics',
+    },
+    accepted: {
+      title: 'Analytics settings',
+      body: 'Analytics is allowed in this browser. Google Analytics may collect page views, campaign details and button and link clicks on this website. The extension has no analytics.',
+      decline: 'Turn off',
+      accept: 'Keep allowing',
+    },
+    declined: {
+      title: 'Analytics settings',
+      body: 'Analytics is off in this browser. This website will not load Google Analytics unless you allow it. The extension has no analytics.',
+      decline: 'Keep off',
+      accept: 'Allow now',
+    },
+  };
 
   /** Returns a stored choice, or null when missing, invalid, or storage throws. */
   const readChoice = (): Choice | null => {
@@ -108,6 +133,15 @@ const { measurementId, isDevelopment } = Astro.props;
   /** Persists a choice; ignores quota or privacy-mode write failures. */
   const writeChoice = (choice: Choice) => {
     try { localStorage.setItem(CONSENT_KEY, choice); } catch {}
+  };
+
+  /** Writes title, body and button labels for unset, accepted or declined. */
+  const applyPanelCopy = (choice: Choice | null) => {
+    const copy = COPY[choice ?? 'unset'];
+    if (title) title.textContent = copy.title;
+    if (body) body.textContent = copy.body;
+    if (decline) decline.textContent = copy.decline;
+    if (accept) accept.textContent = copy.accept;
   };
 
   /**
@@ -147,9 +181,10 @@ const { measurementId, isDevelopment } = Astro.props;
     document.head.append(script);
   };
 
-  /** Reveals the panel and forces a reflow so the entrance animation can replay. */
+  /** Applies state-aware copy, then reveals the panel so the entrance animation can replay. */
   const showPanel = () => {
     if (!panel) return;
+    applyPanelCopy(isDevelopment ? null : readChoice());
     hideSequence += 1;
     panel.hidden = false;
     panel.classList.remove('is-visible', 'is-leaving');
