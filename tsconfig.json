@@ -1,4 +1,6 @@
 {
+  // Strict Astro TypeScript preset, plus generated .astro types.
+  // Include the whole tree; exclude dist so build output is not type-checked.
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]
