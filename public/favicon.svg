@@ -1,1 +1,4 @@
+<!-- Sticky-note mark (Lucide sticky-note). Fill and stroke align with warm paper
+     and the ink color. Attribution: THIRD_PARTY_NOTICES.md. After edits,
+     regenerate the raster favicon PNGs from this SVG. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#efd8aa"/><g transform="translate(2.69 2.69) scale(1.109)" fill="none" stroke="#2d2b2b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/><path d="M7.5 13.5h7M7.5 17h4.5"/></g></svg>
