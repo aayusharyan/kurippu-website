@@ -67,6 +67,7 @@ const STATUS = {
 
 type Place = Pick<Note, 'scope' | 'xp' | 'y'>;
 
+/** Wire persistence, drag, counts, menus and the redesign demo under `root`. */
 export function mountBoard(root: HTMLElement) {
   let notes = load();
   let zc = notes.reduce((m, n) => Math.max(m, n.z || 0), 1);
@@ -102,7 +103,10 @@ export function mountBoard(root: HTMLElement) {
   /** Bumped on every chip sync; a stale cycle's finish handler checks this before touching the DOM. */
   let chipSyncToken = 0;
 
-  // - state -
+  /**
+   * Read saved notes. If the save's seed stamp still matches, restore the whole board;
+   * otherwise keep only visitor notes and take the current seeds.
+   */
   function load(): Note[] {
     let stored: { seeds?: unknown; notes?: unknown } | null = null;
     try { stored = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch {}
@@ -115,6 +119,8 @@ export function mountBoard(root: HTMLElement) {
       : [...seeds(MOD), ...(saved ?? []).filter((n) => n.id.startsWith('n'))];
     return list.map((n) => ({ ...n, lifted: false }));
   }
+
+  /** Persist the board plus the seed stamp used to decide future merges. */
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ seeds: DEFAULT_NOTES_FP, notes })); } catch {} };
 
   /** True when the notes differ from a fresh page load. The redesign demo doesn't count: it runs by itself. */
@@ -166,8 +172,7 @@ export function mountBoard(root: HTMLElement) {
         const view = views.get(n.id);
         const wasRect = view && wasRects.get(n.id);
         if (view && wasRect) {
-          // Moved: slide back from where it was, the same FLIP + sway the redesign demo uses,
-          // instead of snapping straight to the default spot.
+          // Moved: slide back from where it was (FLIP + sway), instead of snapping to the default.
           const nowRect = view.slot.getBoundingClientRect();
           const dx = wasRect.left - nowRect.left, dy = wasRect.top - nowRect.top;
           if (Math.abs(dx) + Math.abs(dy) > 0.5 && !stillMq.matches) {
@@ -180,8 +185,7 @@ export function mountBoard(root: HTMLElement) {
           }
           return;
         }
-        // Otherwise: only a look change (colour, text, left in edit) gets the arrival pop -
-        // nothing moved, so there's nothing to slide.
+        // Look-only change: arrival pop. Nothing moved, so there is nothing to slide.
         if (!lookChanged(prev, n)) return;
         const slap = startSwing(n.id, 0, 0);
         if (slap) { slap.sc = 1.25; slap.ang = i % 2 ? 0.18 : -0.18; }
@@ -189,13 +193,14 @@ export function mountBoard(root: HTMLElement) {
     });
   }
 
+  /** Merge fields into one note, optionally persist, then re-render. */
   function patch(id: string, p: Partial<Note>, persist = true) {
     notes = notes.map((n) => (n.id === id ? { ...n, ...p } : n));
     if (persist) save();
     render();
   }
 
-  // - note count: header chip, chip stack and fine print in the install section -
+  /** How many notes the visitor made (ids starting with "n"). */
   const ownCount = () => notes.filter((n) => n.id.startsWith('n')).length;
   let praised = ownCount();
 
@@ -229,22 +234,21 @@ export function mountBoard(root: HTMLElement) {
     }
   }
 
+  /**
+   * Refresh the header count, colour chips and install fine print.
+   * Chips stay keyed by note id so a mid-stack removal animates that chip, not a reshuffle.
+   */
   function syncCount() {
     const total = notes.length;
     const key = notes.map((n) => n.hue).join();
     if (key === shownKey && total === shown) return;
     const grew = shown >= 0 && total > shown;
     countTo(total, grew);
-    // Chips are kept by note id across renders (not just by trailing position), so removing one
-    // from the middle animates *that* chip out and slides its neighbours over - the survivors
-    // keep their own colour and never get reshuffled onto a different note.
     const target = notes.slice(0, MAX_CHIPS);
     const targetIds = new Set(target.map((n) => n.id));
     const oldEls = stack ? ([...stack.children] as HTMLElement[]) : [];
-    // A change arriving before the previous one finished settling wraps that one up immediately
-    // instead of the two animating over each other. A chip already mid-exit is treated as done
-    // and dropped outright - re-adding its is-leaving class wouldn't replay the animation, so
-    // waiting for a second animationend on it would hang forever.
+    // Finish in-flight chip work before starting again. Mid-exit chips are dropped; waiting on a
+    // second animationend would hang because re-adding is-leaving does not replay the animation.
     const myToken = ++chipSyncToken;
     for (const el of oldEls) {
       el.getAnimations().forEach((a) => a.finish());
@@ -254,10 +258,10 @@ export function mountBoard(root: HTMLElement) {
     const oldById = new Map(liveOldEls.map((el) => [el.dataset.chipId!, el]));
     const leavingChips = liveOldEls.filter((el) => !targetIds.has(el.dataset.chipId!));
 
+    /** FLIP survivors into closed-up slots after leavers finish (or immediately if none). */
     const relayout = () => {
       if (myToken !== chipSyncToken) return; // superseded - the newer cycle owns the DOM now
       if (!stack) return;
-      // FLIP: measure every survivor where it currently sits before touching the DOM.
       const before = new Map<string, DOMRect>();
       for (const el of liveOldEls) {
         if (leavingChips.includes(el)) continue;
@@ -280,7 +284,6 @@ export function mountBoard(root: HTMLElement) {
         }),
       );
       if (stillMq.matches) return;
-      // Glide every survivor from where it was to its new slot instead of letting the reflow jump.
       for (const el of [...stack.children] as HTMLElement[]) {
         if (el.classList.contains('is-new')) continue; // its own entrance animation covers this
         const was = before.get(el.dataset.chipId!);
@@ -294,10 +297,8 @@ export function mountBoard(root: HTMLElement) {
       }
     };
 
-    // The departing chip(s) swipe out first - the exact reverse of swiping in - and only once
-    // that finishes does the rest of the queue glide smoothly into its closed-up positions.
-    // Several leaving together (a reset clearing them all out) peel off one by one, staggered,
-    // instead of vanishing in one synchronised block.
+    // Leavers swipe out first; only then does relayout glide survivors together. Several leaving
+    // together (a reset) peel off one by one instead of vanishing in one block.
     if (leavingChips.length && !stillMq.matches) {
       let left = leavingChips.length;
       leavingChips.forEach((el, i) => {
@@ -326,7 +327,7 @@ export function mountBoard(root: HTMLElement) {
     shownKey = key;
   }
 
-  // - rendering -
+  /** Place every note in its scope (or flow slot), drop orphans, then sync FAB and counts. */
   function render(focusId?: string) {
     const compact = compactMq.matches;
     const flowUsed = new Set<string>();
@@ -366,12 +367,12 @@ export function mountBoard(root: HTMLElement) {
     syncCount();
   }
 
-  // - swing physics: carried notes hang from the pointer; thrown notes coast and settle -
   const swings = new Map<string, Swing & { lx: number; ly: number }>();
   const stillMq = matchMedia('(prefers-reduced-motion: reduce)');
   let raf = 0;
   let last = 0;
 
+  /** Begin or refresh a swing; starts the RAF loop if it was idle. */
   function startSwing(id: string, gx: number, gy: number, lx = 0, ly = 0) {
     if (stillMq.matches) return null;
     const s = { ...(swings.get(id) ?? newSwing()), gx, gy, lx, ly };
@@ -380,11 +381,16 @@ export function mountBoard(root: HTMLElement) {
     return s;
   }
 
+  /** Drop every active swing and clear visual offsets on views. */
   function stopSwings() {
     swings.clear();
     for (const view of views.values()) view.setSwing(null);
   }
 
+  /**
+   * One physics frame: held notes sample pointer velocity; thrown notes coast and bounce;
+   * then angle/scale step. Settled non-coasting swings save and detach.
+   */
   function tick(now: number) {
     const dt = Math.max(0.001, Math.min(0.032, (now - last) / 1000));
     last = now;
@@ -428,7 +434,7 @@ export function mountBoard(root: HTMLElement) {
     if (swings.size) raf = requestAnimationFrame(tick);
   }
 
-  // - adding -
+  /** Map a click into scope + xp/y inside the nearest `[data-scope]`. */
   function placeAt(target: Element, cx: number, cy: number): Place {
     const c = target.closest<HTMLElement>('[data-scope]')!;
     const r = c.getBoundingClientRect();
@@ -436,6 +442,7 @@ export function mountBoard(root: HTMLElement) {
     return { scope: c.dataset.scope!, xp: Math.max(0, Math.min(max, ((cx - r.left) / r.width) * 100)), y: cy - r.top };
   }
 
+  /** Append a new visitor note in edit mode, close open edits, and celebrate milestones. */
   function addNote(p: Place) {
     const n: Note = { id: 'n' + Date.now(), ...p, hue: HUES[notes.length % HUES.length], rot: 0, mode: 'edit', text: '', z: ++zc };
     // Tidy away notes that were left open with something written in them.
@@ -498,7 +505,7 @@ export function mountBoard(root: HTMLElement) {
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
 
-  // - click, right-click -
+  /** Show a short status toast, replacing any still visible. */
   function showToast(text: string) {
     clearTimeout(toastTimer);
     toastEl.textContent = text;
@@ -506,12 +513,15 @@ export function mountBoard(root: HTMLElement) {
     toastTimer = window.setTimeout(() => { toastEl.hidden = true; }, 2400);
   }
 
+  /** Open the context menu at a clamped viewport position for a pending place. */
   function openMenu(x: number, y: number, place: Place) {
     menuPlace = place;
     menu.style.left = Math.min(x, innerWidth - 246) + 'px';
     menu.style.top = Math.min(y, innerHeight - 170) + 'px';
     menu.hidden = false;
   }
+
+  /** Hide the context menu and clear its pending place. */
   function closeMenu() {
     if (menu.hidden) return;
     menu.hidden = true;
@@ -547,10 +557,10 @@ export function mountBoard(root: HTMLElement) {
   window.addEventListener('resize', closeMenu);
   compactMq.addEventListener('change', () => render());
 
-  // - "Websites redesign" demo -
   const status = $('[data-demo-status]')!;
   const redesignBtn = $<HTMLButtonElement>('[data-demo-action="redesign"]')!;
 
+  /** Sync the mock site class, button label and status copy with `demo.redesigned`. */
   function applyDemo() {
     demoPage.classList.toggle('is-redesigned', demo.redesigned);
     redesignBtn.setAttribute('aria-pressed', String(demo.redesigned));
@@ -558,7 +568,7 @@ export function mountBoard(root: HTMLElement) {
     status.textContent = demo.redesigned ? STATUS.redesigned : STATUS.idle;
   }
 
-  // - demo motion: the mock site's blocks glide to their new places and the notes follow a beat late -
+  // Demo motion: blocks glide to new places; notes follow a beat late.
   const BLOCK_MS = 550, BLOCK_STAGGER = 35;
   const NOTE_MS = 700, NOTE_LAG = 80;
   const glide = bezier(0.2, 0.7, 0.2, 1);
@@ -583,7 +593,7 @@ export function mountBoard(root: HTMLElement) {
     for (const el of [...blocks, ...demoSlots().map(([, v]) => v.slot)]) before.set(el, rectOf(el));
     for (const el of blocks) fontBefore.set(el, getComputedStyle(el).fontSize);
     for (const el of before.keys()) el.getAnimations().forEach((a) => a.cancel());
-    // A copy of each block as it looks now, in case it has to be left behind (see below).
+    // Ghost clones keep the old look out of flow when a block must leave or morph in place.
     const ghosts = new Map<HTMLElement, HTMLElement>();
     for (const el of blocks) if (before.get(el) && !el.querySelector('.note-slot')) ghosts.set(el, el.cloneNode(true) as HTMLElement);
 
@@ -697,6 +707,7 @@ export function mountBoard(root: HTMLElement) {
   }
 
   const actions: Record<string, () => void> = {
+    /** Toggle redesign inside flip so blocks and notes animate from their old boxes. */
     redesign() {
       flip(() => {
         demo.redesigned = !demo.redesigned;
@@ -710,8 +721,7 @@ export function mountBoard(root: HTMLElement) {
     b.addEventListener('click', () => actions[b.dataset.demoAction!]());
   });
 
-  // The first run is automatic: a beat after the demo scrolls into view it redesigns itself. Its
-  // control already describes that destination, then unlocks and rings once the motion is done.
+  // Auto-redesign once the demo scrolls into view; unlock and ring the control when motion ends.
   // Without motion (or IntersectionObserver), show the destination immediately and unlock it.
   const FIRST_RUN_DELAY = 700;
   const RUN_MS = MOVE_DELAY + NOTE_LAG + NOTE_MS + 300;
