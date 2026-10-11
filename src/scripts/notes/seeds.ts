@@ -4,6 +4,9 @@
 /** Palette cycled when a visitor adds a note. */
 export const HUES = [85, 145, 235, 20, 305] as const;
 
+/** Tilts (degrees) cycled across the install stack's paper chips; the welcome ribbon's chips reuse them. */
+export const CHIP_ROTS = [-8, 5, -3, 9, -6, 4];
+
 export interface Note {
   id: string;
   /** `data-scope` of the container the note is pinned to. */
@@ -20,6 +23,8 @@ export interface Note {
   lifted?: boolean;
   /** A seed note the visitor has dragged; it no longer reflows on narrow screens. */
   moved?: boolean;
+  /** Shrunk to a paper chip in place; clicking the chip opens the note again. */
+  min?: boolean;
 }
 
 /**
