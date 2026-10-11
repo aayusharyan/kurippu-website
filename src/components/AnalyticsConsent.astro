@@ -258,6 +258,8 @@ const { measurementId, isDevelopment } = Astro.props;
     if (!(event.target instanceof Element)) return;
     const target = event.target.closest<HTMLAnchorElement | HTMLButtonElement>('a, button');
     if (!target) return;
+    // Controls that exist only for visitors with the extension opt out, so a measured click cannot reveal that it is installed.
+    if (target.hasAttribute('data-analytics-ignore')) return;
 
     const isLink = target instanceof HTMLAnchorElement;
     const eventName = target.dataset.analyticsEvent || (isLink ? 'link_click' : 'button_click');
