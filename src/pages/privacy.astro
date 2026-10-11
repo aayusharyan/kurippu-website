@@ -19,7 +19,7 @@ const permissions = [
 ---
 <Base
   title="Kurippu - Privacy policy"
-  description="How Kurippu handles note data, optional Google Drive backups and consent-based website analytics."
+  description="How Kurippu handles note data, optional Google Drive backups, uninstall feedback and consent-based website analytics."
 >
   <div class="site">
     <header class="wrap">
@@ -30,14 +30,14 @@ const permissions = [
     <main>
       <article>
         <div class="intro">
-          <div class="kicker tnum">Effective 9 October 2026</div>
+          <div class="kicker tnum">Effective 11 October 2026</div>
           <h1>Privacy policy</h1>
           <p class="lead">This policy covers the Kurippu browser extension and this product website. The extension keeps note data under your control and contains no advertising or analytics. The website measures visits with Google Analytics only after you agree.</p>
         </div>
 
         <section>
           <h2>Data attached to a note</h2>
-          <p class="prose">A saved note consists of its written content, color, tags, creation and edit times, and the address of the page where you made it. Kurippu also records only the placement details required to restore that note: its page position, a reference to the closest relevant element and a brief sample of that element&rsquo;s text. It does not retain other material from the websites you browse.</p>
+          <p class="prose">A saved note consists of its written content, color, tags, creation and edit times, whether you left it open for editing or showing the formatted preview, and the address of the page where you made it. Kurippu also records only the placement details required to restore that note: its page position, a reference to the closest relevant element and a brief sample of that element&rsquo;s text. It does not retain other material from the websites you browse. That edit-or-preview choice is saved with the note, so it is still there after a refresh, and it travels with the note through browser sync and an optional Drive backup.</p>
         </section>
 
         <section>
@@ -58,10 +58,23 @@ const permissions = [
 
         <section>
           <h2>Analytics on this website</h2>
-          <p class="prose">With your permission, this site uses Google Analytics 4 to learn how people arrive and which parts they use. The information sent to Google includes page views, page addresses, referring pages, campaign parameters such as <code>utm_source</code>, <code>utm_medium</code> and <code>utm_campaign</code>, every button and link click, link destinations, and device details such as language, browser, operating system, device type and screen size. Click events use identifiers defined by the site and never copy button or link text from the page. Google may also determine an approximate location. Analytics does not produce heatmaps or screen recordings here, and we exclude the text entered in demo notes, your name, your email address and any other custom identifier.</p>
+          <p class="prose">With your permission, this site uses Google Analytics 4 to learn how people arrive and which parts they use. The information sent to Google includes page views, page addresses, referring pages, campaign parameters such as <code>utm_source</code>, <code>utm_medium</code> and <code>utm_campaign</code>, every button and link click (apart from the one footer control described below), link destinations, and device details such as language, browser, operating system, device type and screen size. Click events use identifiers defined by the site and never copy button or link text from the page. Google may also determine an approximate location. Analytics does not produce heatmaps or screen recordings here, and we exclude the text entered in demo notes, your name, your email address and any other custom identifier.</p>
           <p class="prose">Nothing from Google Analytics is loaded or requested before you select <i>Allow analytics</i>. After consent, it may place first-party cookies including <code>_ga</code> and <code>_ga_&lt;container-id&gt;</code>, which distinguish visitors and sessions. We keep advertising storage, advertising user data, advertising personalization and Google signals switched off.</p>
           <p class="prose">The site records your decision in this browser&rsquo;s <code>localStorage</code> as <code>kurippu-site-google-analytics-consent-v1</code>. That entry uses browser storage rather than a cookie. The <i>Analytics settings</i> control in the footer reopens the panel with your current choice so you can keep or change it whenever you wish. If you decline or later withdraw permission, future pages will not load Google Analytics. Previously created analytics cookies can persist until you remove them or they expire, but this site will neither load Analytics nor read those cookies.</p>
           <p class="prose">Google is the recipient and processor of analytics information. During collection, it uses IP addresses for functions that include estimating location and securing the service, then says it discards the raw addresses. The default lifetime of <code>_ga</code> cookies is two years. Retention of user-level and event-level information depends on the Analytics property&rsquo;s configured retention period. Further details are available in <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google&rsquo;s Privacy Policy</a>, its explanation of <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">data use on partner sites</a> and the <a href="https://support.google.com/analytics/answer/7667196" target="_blank" rel="noopener noreferrer">Google Analytics retention documentation</a>.</p>
+        </section>
+
+        <section>
+          <h2>Uninstall feedback</h2>
+          <p class="prose">The uninstall feedback page asks why you removed Kurippu. Every question is optional, and nothing is sent unless you press <i>Send feedback</i>. The form sends the submission to <code>api.kurippu.com</code>, and it contains only the answers shown in the form: the reasons you selected, how long you used Kurippu, what you switched to if you chose to say, your free-text message, and your email address if you asked for a reply. No IP address, user-agent string, timestamp or other metadata is added to the stored feedback record.</p>
+          <p class="prose">The submission is kept in Aayush Sinha&rsquo;s private database in Japan. Only Aayush Sinha can access it, and no third party receives or processes the feedback. It is used only to improve Kurippu and, when you request a reply, to respond about your feedback. It is kept without a fixed expiry until you ask for it to be removed.</p>
+          <p class="prose">The answers are not stored in your browser and are never sent to Google Analytics. If you have allowed website analytics, Google Analytics may record that the <i>Send feedback</i> button was pressed, but it receives none of the answers. To ask what feedback is held about you or request its deletion, email <a href="mailto:hello@yush.dev" target="_blank" rel="noopener noreferrer">hello@yush.dev</a>.</p>
+        </section>
+
+        <section>
+          <h2>Detecting the extension on this website</h2>
+          <p class="prose">If the Kurippu extension is installed in your browser, it tells this website that it is there. The message carries only a short identifier and the extension&rsquo;s version number, never your notes, and it stays inside your browser tab: it is not sent to any server and it is not part of the Google Analytics events described above. The site uses it for one thing, a short welcome animation of paper notes sweeping across the page, plus a footer link that plays the animation again.</p>
+          <p class="prose">The welcome animation plays on every home-page load. The site does not save or track whether it has played. The footer link is left out of click measurement, so using it is not recorded. Visitors without the extension, and visitors whose system asks to reduce motion, never see the animation.</p>
         </section>
 
         <section>
@@ -79,12 +92,12 @@ const permissions = [
           <table class="table">
             <thead><tr><th>Permission</th><th>Why</th></tr></thead>
             <tbody>
-              {permissions.map(([p, why]) => <tr><td class="perm">{p}</td><td set:html={why} /></tr>)}
+              {permissions.map(([permission, why]) => <tr><td class="perm">{permission}</td><td set:html={why} /></tr>)}
             </tbody>
           </table>
         </section>
 
-        <section>
+        <section id="managing-and-deleting-your-data">
           <h2>Managing and deleting your data</h2>
           <p class="prose">Individual notes can be changed or removed at any time. From the options page, you can download the complete collection as Markdown or JSON, or erase every note. Disconnecting Google Drive ends future backups. To delete its existing backup as well, remove Kurippu&rsquo;s data from <i>Manage apps</i> in Drive settings, then revoke the connection at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>. Removing the extension clears the Kurippu data held by your browser.</p>
         </section>
