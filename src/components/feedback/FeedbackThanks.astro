@@ -1,0 +1,119 @@
+---
+/**
+ * The view that replaces the form once feedback has been sent. It starts hidden;
+ * scripts/feedback/form.ts reveals it, moves focus to the heading and shows the email line
+ * only when the visitor left an address. Built from the 404 page's pieces: big word, hand-drawn underline, paper note.
+ */
+import { href } from '../../config';
+---
+<div class="thanks-view" data-feedback-thanks-view hidden>
+  <div class="wrap content">
+    <div id="feedback-thanks-kicker" class="kicker">Feedback sent</div>
+
+    <div class="numerals">
+      <h1 tabindex="-1" aria-describedby="feedback-thanks-kicker" data-feedback-thanks-title>Noted.</h1>
+      <svg viewBox="0 0 84 12" fill="none" aria-hidden="true"><path d="M2 8 C 18 2, 32 11, 48 6 S 72 3, 82 7" pathLength="1" /></svg>
+      <!-- Decorative: the heading and the lines below carry the meaning. -->
+      <div class="note" aria-hidden="true">
+        <div class="band"></div>
+        <div class="body"><b>Thank you.</b><br />Your note is in.</div>
+      </div>
+    </div>
+
+    <p class="lead">Thank you for telling us why. It helps more than you would think.</p>
+    <p class="email-line" data-feedback-thanks-email hidden>We will use your email only to reply about this feedback.</p>
+
+    <a class="btn btn-primary big" href={href()}>Back to the homepage</a>
+    <p class="fine">Changed your mind? <a href="https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh" data-analytics-event="select_content" data-analytics-placement="uninstalled-thanks">Add Kurippu to Chrome again</a>.</p>
+    <p class="boxed">Notes held in your browser were cleared when Kurippu was removed. A Drive backup, if you made one, stays in your Drive until you remove it. <a href={href('privacy/#managing-and-deleting-your-data')}>See how to remove it</a>.</p>
+  </div>
+</div>
+
+<style>
+  .thanks-view {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .thanks-view[hidden] { display: none; }
+  .content {
+    width: 100%;
+    padding-top: 32px;
+    padding-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 22px;
+  }
+
+  .numerals { position: relative; display: inline-block; padding-bottom: 14px; }
+  h1 {
+    margin: 0;
+    font: 400 clamp(96px, 15vw, 200px)/0.9 var(--font-heading);
+    letter-spacing: -0.03em;
+  }
+  /* The heading takes focus when the view opens; the big word does not need a ring around it. */
+  h1:focus { outline: none; }
+  /* Hand-drawn underline, drawn the same way as the 404 page's. */
+  .numerals svg {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 60%;
+    transform: translateX(-50%);
+    aspect-ratio: 84 / 12;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .numerals path {
+    stroke: var(--color-mark);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .numerals path { animation: arrive-draw 0.6s ease-out 0.3s backwards; }
+  }
+
+  /* Same paper as the demo's notes (see styles/notes.css), hung off the last letter. */
+  .note {
+    position: absolute;
+    top: -6px;
+    right: clamp(-70px, -5vw, -24px);
+    width: clamp(128px, 15vw, 188px);
+    background: oklch(0.93 0.05 85);
+    box-shadow: var(--shadow-md);
+    border-radius: 2px;
+    transform: rotate(5deg);
+    text-align: left;
+  }
+  .band { height: 22px; background: oklch(0.89 0.065 85); border-radius: 2px 2px 0 0; }
+  .body { padding: 10px 14px 14px; font-size: 14px; line-height: 1.5; }
+  .body b { font-weight: 600; }
+
+  /* Narrow screens: the note rides above the word so it stays readable. */
+  @media (max-width: 760px) {
+    .numerals { margin-top: 56px; }
+    .note { top: -66px; right: -18px; width: 124px; }
+    .band { height: 18px; }
+    .body { padding: 8px 11px 11px; font-size: 12.5px; }
+  }
+
+  .lead { margin: 0; font-size: 17px; line-height: 1.6; max-width: 460px; text-wrap: pretty; }
+  .email-line { margin: -10px 0 0; font-size: 14px; line-height: 1.6; max-width: 460px; color: var(--color-neutral-700); }
+  .email-line[hidden] { display: none; }
+  .big { font-size: 18px; padding: 14px 28px; }
+  .fine { margin: 0; font-size: 13px; line-height: 1.55; color: var(--color-neutral-700); }
+  .boxed {
+    max-width: 560px;
+    margin: 0;
+    padding: 14px 18px;
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.65;
+    text-align: left;
+  }
+</style>
