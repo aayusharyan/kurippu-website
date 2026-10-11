@@ -1,0 +1,199 @@
+---
+/**
+ * Where the extension sends people after they uninstall it: a short, all-optional feedback form.
+ * Kept out of search results and the sitemap, and written so nothing is sent until the visitor presses Send.
+ * Static copy below uses HTML entities for typographic characters.
+ */
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import FeedbackForm from '../components/feedback/FeedbackForm.astro';
+import FeedbackThanks from '../components/feedback/FeedbackThanks.astro';
+import { href } from '../config';
+---
+<Base
+  title="Kurippu - Uninstalled"
+  description="Kurippu has been removed. If you have a minute, tell us why it didn&rsquo;t work out."
+  image="og-uninstalled.png"
+  imageAlt="The headline &ldquo;Sorry it didn&rsquo;t stick.&rdquo; beside a sticky note with a peeled corner, reading &ldquo;Peeling off. No hard feelings.&rdquo;"
+  noindex
+>
+  <div class="site">
+    <header class="wrap">
+      <Logo to={href()} />
+      <a class="back" href={href()}><span class="arrow" aria-hidden="true">&larr;</span><span class="label">Back to the site</span></a>
+    </header>
+
+    <main>
+      <!-- The form view; scripts/feedback/form.ts hides it and reveals the thank-you view after a send. -->
+      <div class="wrap form-view" data-feedback-form-view>
+        <div class="layout">
+          <div class="intro">
+            <div class="kicker">Kurippu has been removed</div>
+            <h1>Sorry it didn&rsquo;t <span class="stick">stick<svg viewBox="0 0 84 12" fill="none" aria-hidden="true"><path d="M2 8 C 18 2, 32 11, 48 6 S 72 3, 82 7" pathLength="1" /></svg></span>.</h1>
+            <p class="lead">If you have a minute, tell us why it didn&rsquo;t work out. Every question is optional, and skipping them all is fine.</p>
+            <!-- Decorative: a note with a peeled corner. -->
+            <div class="peel-wrap" aria-hidden="true">
+              <div class="peel"><div class="band"></div><div class="body"><b>Peeling off.</b><br />No hard feelings.</div></div>
+            </div>
+          </div>
+
+          <div class="form-area">
+            <FeedbackForm />
+          </div>
+
+          <aside class="aside">
+            <div class="aside-item">
+              <h2>Changed your mind?</h2>
+              <p>Kurippu is free and one click away. If you used Drive backup, your notes can come back with it.</p>
+              <a class="more" href="https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh" data-analytics-event="select_content" data-analytics-placement="uninstalled">Add Kurippu to Chrome <Icon name="arrow-right" size={14} /></a>
+            </div>
+            <div class="aside-item">
+              <h2>Want your data gone too?</h2>
+              <p>Removing Kurippu cleared the notes it held in your browser. A Drive backup, if you made one, stays in your Drive until you remove it.</p>
+              <a class="more" href={href('privacy/#managing-and-deleting-your-data')}>How to remove it <Icon name="arrow-right" size={14} /></a>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <FeedbackThanks />
+    </main>
+
+    <SiteFooter links={[{ label: 'Home', href: href() }, { label: 'Privacy policy', href: href('privacy/') }, { label: 'Source code', href: 'https://github.com/aayusharyan/kurippu', newTab: true }]} />
+  </div>
+</Base>
+
+<style>
+  .site {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+  }
+  /* .wrap's auto margins stop a flex item stretching, so ask for the full width. */
+  header {
+    width: 100%;
+    padding-block: 22px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .back { margin-left: auto; font-size: 14px; }
+  main { flex: 1; display: flex; flex-direction: column; }
+  .form-view {
+    width: 100%;
+    padding-top: clamp(40px, 7vw, 72px);
+    padding-bottom: clamp(72px, 8vw, 120px);
+  }
+  .form-view[hidden] { display: none; }
+
+  /* One column on phones, in reading order: intro, form, aside. From 960px the intro and aside stack
+     in a narrow left column beside the form, which spans both rows. */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 56px; }
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+      grid-template-areas: 'intro form' 'aside form';
+      grid-template-rows: auto 1fr;
+      column-gap: clamp(48px, 6vw, 88px);
+      row-gap: 48px;
+      align-items: start;
+    }
+    .intro { grid-area: intro; }
+    .form-area { grid-area: form; }
+    .aside { grid-area: aside; }
+  }
+
+  .intro { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+  h1 {
+    margin: 0;
+    font: 400 clamp(48px, 6vw, 76px)/0.98 var(--font-heading);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  /* Hand-drawn underline, drawn the same way as the hero's. */
+  .stick { position: relative; display: inline-block; }
+  .stick svg {
+    position: absolute;
+    left: -0.05em;
+    bottom: 0.03em;
+    width: calc(100% + 0.1em);
+    aspect-ratio: 84 / 12;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .stick path {
+    stroke: var(--color-mark);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stick path { animation: arrive-draw 0.5s ease-out 0.35s backwards; }
+  }
+  .lead { margin: 0; font-size: 18px; line-height: 1.6; max-width: 440px; text-wrap: pretty; }
+
+  /* A note with a peeled corner. The clip cuts the corner off, so the shadow is drawn by a filter on the wrapper. */
+  .peel-wrap {
+    margin: 12px 0 0 6px;
+    transform: rotate(-3deg);
+    filter: drop-shadow(0 3px 6px color-mix(in srgb, #2d2b2b 24%, transparent));
+  }
+  .peel {
+    position: relative;
+    width: 212px;
+    background: oklch(0.93 0.05 85);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%);
+  }
+  .peel::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(to bottom right, oklch(0.91 0.055 85) 0%, oklch(0.84 0.075 85) 50%, transparent 50%);
+  }
+  .band { height: 22px; background: oklch(0.89 0.065 85); }
+  .body { padding: 10px 14px 18px; font-size: 14px; line-height: 1.5; }
+  .body b { font-weight: 600; }
+  @media (max-width: 759px) {
+    .peel-wrap { display: none; }
+  }
+
+  .aside {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 28px;
+  }
+  .aside-item { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  h2 { margin: 0; font: 600 21px/1.25 var(--font-heading); letter-spacing: normal; }
+  .aside p { margin: 0; font-size: 14px; line-height: 1.65; text-wrap: pretty; }
+  .more {
+    font: 600 17px/1.2 var(--font-heading);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: color 0.15s, text-underline-offset 0.18s, transform 0.1s;
+  }
+  .more :global(svg) { transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25); }
+  .more:hover, .more:focus-visible { text-underline-offset: 6px; }
+  .more:hover :global(svg), .more:focus-visible :global(svg) { transform: translateX(5px); }
+  .more:active { transform: translateY(1px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .more, .more :global(svg) { transition: none; }
+    .more:active { transform: none; }
+  }
+</style>
