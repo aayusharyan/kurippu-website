@@ -21,7 +21,7 @@ import { href } from '../../config';
       <div class="ctx menu" aria-hidden="true">
         <div class="ctx-item">Print&hellip;</div>
         <div class="ctx-sep"></div>
-        <div class="ctx-hot"><span class="tile mini"><img src={href('favicon.svg')} width="16" height="16" alt="" /></span>Add sticky note here</div>
+        <div class="ctx-hot"><span class="tile mini"><img src={href('favicon.svg')} width="16" height="16" alt="" loading="lazy" /></span>Add sticky note here</div>
         <div class="ctx-sep"></div>
         <div class="ctx-item">Inspect</div>
       </div>
@@ -35,7 +35,7 @@ import { href } from '../../config';
     <li>
       <span class="num">3</span>
       <h3>Write, flip, forget</h3>
-      <p>Markdown while you edit, neatly set in preview. Pick a color. Close the tab - the note will be there when you&rsquo;re back.</p>
+      <p>Markdown while you edit, neatly set once you switch to preview. It stays in edit until you do, and a refresh keeps that choice. Pick a color. Close the tab - the note will be there when you&rsquo;re back.</p>
       <!-- Static edit-to-preview flip: Markdown source on the left, rendered note on the right. -->
       <div class="flip" aria-hidden="true">
         <div class="mini-note mono">**Gift ideas**<br />- [x] Book<br />- [ ] Plant</div>
