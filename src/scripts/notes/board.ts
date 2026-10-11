@@ -536,11 +536,22 @@ export function mountBoard(root: HTMLElement) {
     menuPlace = null;
   }
 
+  // Click can arrive after the button is up, with whatever modifier is held then.
+  // Remember the modifier from the press, and only that press may add a note.
+  let modifierHeldAtPress = false;
+  root.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    modifierHeldAtPress = modDown(e);
+  }, true);
+  root.addEventListener('pointercancel', () => { modifierHeldAtPress = false; }, true);
+
   root.addEventListener('click', (e) => {
+    const heldFromPress = modifierHeldAtPress;
+    modifierHeldAtPress = false;
     closeMenu();
     const t = e.target as Element;
     if (t.closest(INTERACTIVE)) return;
-    if (modDown(e)) {
+    if (heldFromPress && e.button === 0 && modDown(e)) {
       e.preventDefault();
       addNote(placeAt(t, e.clientX, e.clientY));
       return;
