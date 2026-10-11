@@ -2,12 +2,13 @@
 // Notes persist in localStorage; a FAB appears when the board differs from its seeds so visitors can reset.
 import { NoteView, type NoteApi } from './note';
 import { bezier, newSwing, pivotShift, release, stepSwing, type Swing } from './physics';
-import { HUES, isSeed, seeds, type Note } from './seeds';
+import { CHIP_ROTS, HUES, isSeed, seeds, type Note } from './seeds';
 
 // v3: the name-origin section gained a seed and anchor, so older saved defaults are dropped.
 // v4: the Screens and Shortcuts sections gained their "in development" seeds, which saved lists predate.
 // v5: the name-origin seed was renamed from "name1" (an "n" id reads as a visitor note), so v4 lists would keep a stray copy.
 // v6: saves carry a stamp of the seeds they were made against (see load), so editing a seed no longer needs a bump.
+// The optional `min` field needed no bump: older saves read as expanded, and the changed seed stamp merges them once.
 // Bump only when the shape of a Note changes, or an anchor (data-scope) that visitor notes may hang from goes away.
 const KEY = 'kurippu-site-notes-v6';
 const NOTE_W = 236; // note width plus breathing room, used when clamping
@@ -20,7 +21,6 @@ const INTERACTIVE = '[data-note],a,button,input,textarea,summary,select,label,[d
 const FLOW_SCOPES = new Set(['hero-a', 'screens', 'name-origin']);
 /** Most chips the install section stacks; the header count keeps going past it. */
 const MAX_CHIPS = 20;
-const CHIP_ROTS = [-8, 5, -3, 9, -6, 4];
 /** A bulk clear-out (reset) peels its cards off one by one, this far apart, instead of as one block. */
 const STAGGER_MS = 45;
 /** The header count ticks down on that same beat, but a huge clear-out is capped to roughly this long. */
@@ -44,7 +44,7 @@ function replay(el: Element, cls: string) {
 function noteFingerprint(list: Note[]) {
   return JSON.stringify(
     list
-      .map(({ id, scope, xp, y, hue, rot, mode, text, moved }) => ({
+      .map(({ id, scope, xp, y, hue, rot, mode, text, moved, min }) => ({
         id,
         scope,
         xp: Math.round(xp * 1000) / 1000,
@@ -54,6 +54,7 @@ function noteFingerprint(list: Note[]) {
         mode,
         text,
         moved: !!moved,
+        min: !!min,
       }))
       .sort((a, b) => a.id.localeCompare(b.id)),
   );
@@ -67,10 +68,19 @@ const STATUS = {
 
 type Place = Pick<Note, 'scope' | 'xp' | 'y'>;
 
+/** The sentence under the note count, based on how many notes the visitor added. */
+function installFinePrint(ownCount: number, defaultText: string): string {
+  if (!ownCount) return defaultText;
+  if (ownCount === 1) return 'You’ve left your first note here. With Kurippu, you can do that on any webpage.';
+  if (ownCount === 2) return 'You’ve left a couple of notes here. With Kurippu, you can do that on any webpage.';
+  if (ownCount <= 15) return `You’ve left ${ownCount} notes here. With Kurippu, you can do that on any webpage.`;
+  return 'You’ve made this page your own. With Kurippu, you can do that on any webpage.';
+}
+
 /** Wire persistence, drag, counts, menus and the redesign demo under `root`. */
 export function mountBoard(root: HTMLElement) {
   let notes = load();
-  let zc = notes.reduce((m, n) => Math.max(m, n.z || 0), 1);
+  let nextNoteZ = notes.reduce((m, n) => Math.max(m, n.z || 0), 1);
   /** `px`/`py` are the pointer's latest position, read by the swing loop. */
   let drag: { id: string; sx: number; sy: number; ox: number; oy: number; w: number; px: number; py: number } | null = null;
   let menuPlace: Place | null = null;
@@ -78,20 +88,22 @@ export function mountBoard(root: HTMLElement) {
   const demo = { redesigned: false };
   const views = new Map<string, NoteView>();
 
-  const $ = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel);
+  const queryInBoard = <T extends Element = HTMLElement>(selector: string) => root.querySelector<T>(selector);
   // Root itself is data-scope="page"; querySelector only sees descendants, so check root first.
-  const scopeEl = (scope: string) =>
-    (root.matches(`[data-scope="${scope}"]`) ? root : null) ?? $(`[data-scope="${scope}"]`);
-  const menu = $('[data-menu]')!;
-  const toastEl = $('[data-toast]')!;
-  const fab = $('[data-reset-fab]')!;
+  function scopeElement(scope: string): HTMLElement | null {
+    if (root.matches(`[data-scope="${scope}"]`)) return root;
+    return queryInBoard(`[data-scope="${scope}"]`);
+  }
+  const menu = queryInBoard('[data-menu]')!;
+  const toastEl = queryInBoard('[data-toast]')!;
+  const fab = queryInBoard('[data-reset-fab]')!;
   const compactMq = matchMedia('(max-width: 1179.98px)');
   /** The mock site in the "Websites redesign" demo. */
-  const demoPage = scopeEl('demo')!;
-  const countEl = $('[data-note-count]');
-  const countNum = $('[data-note-count-num]');
-  const stack = $('[data-note-stack]');
-  const fine = $('[data-note-fine]');
+  const demoPage = scopeElement('demo')!;
+  const countEl = queryInBoard('[data-note-count]');
+  const countNum = queryInBoard('[data-note-count-num]');
+  const stack = queryInBoard('[data-note-stack]');
+  const fine = queryInBoard('[data-note-fine]');
   const fineDefault = fine?.textContent ?? '';
   /** What the count UI last showed; -1 until the first render so loading doesn't animate. */
   let shown = -1;
@@ -131,9 +143,9 @@ export function mountBoard(root: HTMLElement) {
 
   /** True when a seed was dragged somewhere else, so it needs to travel back rather than just pop. */
   const posChanged = (prev: Note | undefined, n: Note) => !prev || prev.xp !== n.xp || prev.y !== n.y;
-  /** True when a seed's look differs (recoloured, retexted, left in edit) with its position unchanged. */
+  /** True when a seed's look differs (recoloured, retexted, left in edit, minimised) with its position unchanged. */
   const lookChanged = (prev: Note | undefined, n: Note) =>
-    !prev || prev.rot !== n.rot || prev.hue !== n.hue || prev.mode !== n.mode || prev.text !== n.text;
+    !prev || prev.rot !== n.rot || prev.hue !== n.hue || prev.mode !== n.mode || prev.text !== n.text || !!prev.min !== !!n.min;
 
   /** Wipe persisted notes so the board matches the seed defaults again. The demo's layout is left as it is. */
   function resetAll() {
@@ -160,8 +172,8 @@ export function mountBoard(root: HTMLElement) {
       }
 
       notes = newSeeds;
-      zc = 1;
-      praised = 0;
+      nextNoteZ = 1;
+      lastMilestoneOwnCount = 0;
       stopSwings();
       try { localStorage.removeItem(KEY); } catch {}
       closeMenu();
@@ -187,8 +199,8 @@ export function mountBoard(root: HTMLElement) {
         }
         // Look-only change: arrival pop. Nothing moved, so there is nothing to slide.
         if (!lookChanged(prev, n)) return;
-        const slap = startSwing(n.id, 0, 0);
-        if (slap) { slap.sc = 1.25; slap.ang = i % 2 ? 0.18 : -0.18; }
+        const entrySwing = startSwing(n.id, 0, 0);
+        if (entrySwing) { entrySwing.sc = 1.25; entrySwing.ang = i % 2 ? 0.18 : -0.18; }
       });
     });
   }
@@ -202,7 +214,7 @@ export function mountBoard(root: HTMLElement) {
 
   /** How many notes the visitor made (ids starting with "n"). */
   const ownCount = () => notes.filter((n) => n.id.startsWith('n')).length;
-  let praised = ownCount();
+  let lastMilestoneOwnCount = ownCount();
 
   /**
    * Move the header number to `total`. A bulk removal (reset) counts down one note at a time, on the
@@ -311,18 +323,7 @@ export function mountBoard(root: HTMLElement) {
     } else {
       relayout();
     }
-    if (fine) {
-      const own = ownCount();
-      fine.textContent = !own
-        ? fineDefault
-        : own === 1
-          ? 'You’ve left your first note here. With Kurippu, you can do that on any webpage.'
-          : own === 2
-            ? 'You’ve left a couple of notes here. With Kurippu, you can do that on any webpage.'
-            : own <= 15
-              ? `You’ve left ${own} notes here. With Kurippu, you can do that on any webpage.`
-              : 'You’ve made this page your own. With Kurippu, you can do that on any webpage.';
-    }
+    if (fine) fine.textContent = installFinePrint(ownCount(), fineDefault);
     shown = total;
     shownKey = key;
   }
@@ -336,8 +337,8 @@ export function mountBoard(root: HTMLElement) {
       if (!view) views.set(n.id, (view = new NoteView(n, api, MOD)));
 
       const { slot } = view;
-      const flow = compact && FLOW_SCOPES.has(n.scope) && isSeed(n) ? $(`[data-flow="${n.scope}"]`) : null;
-      const host = flow ?? scopeEl(n.scope);
+      const flow = compact && FLOW_SCOPES.has(n.scope) && isSeed(n) ? queryInBoard(`[data-flow="${n.scope}"]`) : null;
+      const host = flow ?? scopeElement(n.scope);
       // No host on this page, or its anchor isn't currently shown.
       if (!host || (!flow && host.hidden)) { slot.remove(); view.update(n); continue; }
       slot.classList.toggle('is-flow', !!flow);
@@ -409,7 +410,7 @@ export function mountBoard(root: HTMLElement) {
       } else if (Math.abs(s.vx) + Math.abs(s.vy) > 3) {
         // Thrown: keep going, lose speed, and bounce off the sides of the note's container.
         coasting = true;
-        const w = scopeEl(n.scope)?.getBoundingClientRect().width ?? 0;
+        const w = scopeElement(n.scope)?.getBoundingClientRect().width ?? 0;
         const maxX = Math.max(0, w - NOTE_W);
         let x = (n.xp / 100) * w + s.vx * dt;
         if (x < 0) { x = 0; s.vx *= -0.5; }
@@ -442,27 +443,32 @@ export function mountBoard(root: HTMLElement) {
     return { scope: c.dataset.scope!, xp: Math.max(0, Math.min(max, ((cx - r.left) / r.width) * 100)), y: cy - r.top };
   }
 
-  /** Append a new visitor note in edit mode, close open edits, and celebrate milestones. */
+  /** Append a new visitor note in edit mode and celebrate milestones. Other notes keep their mode. */
   function addNote(p: Place) {
-    const n: Note = { id: 'n' + Date.now(), ...p, hue: HUES[notes.length % HUES.length], rot: 0, mode: 'edit', text: '', z: ++zc };
-    // Tidy away notes that were left open with something written in them.
-    notes = notes.map((x) => (x.mode === 'edit' && x.text.trim() ? { ...x, mode: 'preview' as const } : x)).concat(n);
+    const n: Note = { id: 'n' + Date.now(), ...p, hue: HUES[notes.length % HUES.length], rot: 0, mode: 'edit', text: '', z: ++nextNoteZ };
+    notes = notes.concat(n);
     closeMenu();
     save();
     render(n.id);
     // Arrives oversized and askew; the swing springs bring it to rest.
-    const slap = startSwing(n.id, 0, 0);
-    if (slap) { slap.sc = 1.3; slap.ang = notes.length % 2 ? 0.2 : -0.2; }
+    const entrySwing = startSwing(n.id, 0, 0);
+    if (entrySwing) { entrySwing.sc = 1.3; entrySwing.ang = notes.length % 2 ? 0.2 : -0.2; }
     const own = ownCount();
-    if (own > praised) {
-      praised = own;
+    if (own > lastMilestoneOwnCount) {
+      lastMilestoneOwnCount = own;
       if (MILESTONES[own]) showToast(MILESTONES[own]);
-      if (own === 5) { const cta = $('[data-install-cta]'); if (cta) replay(cta, 'is-ringing'); }
+      if (own === 5) { const cta = queryInBoard('[data-install-cta]'); if (cta) replay(cta, 'is-ringing'); }
     }
   }
 
   const api: NoteApi = {
-    update: (id, p) => patch(id, p),
+    // A note opened from its chip arrives slightly oversized and askew, like a new one, and springs to rest.
+    update: (id, p) => {
+      patch(id, p);
+      if (p.min !== false) return;
+      const s = startSwing(id, 0, 0);
+      if (s) { s.sc = 1.15; s.ang = (notes.find((n) => n.id === id)?.rot ?? 0) < 0 ? 0.12 : -0.12; }
+    },
     remove: (id) => {
       const view = views.get(id);
       const drop = () => { notes = notes.filter((n) => n.id !== id); save(); render(); };
@@ -471,20 +477,22 @@ export function mountBoard(root: HTMLElement) {
     },
     focus: (id) => {
       const n = notes.find((x) => x.id === id);
-      if (n && n.z !== zc) patch(id, { z: ++zc }, false);
+      if (n && n.z !== nextNoteZ) patch(id, { z: ++nextNoteZ }, false);
     },
     startDrag: (id, e) => {
       const view = views.get(id);
-      const c = (e.currentTarget as Element).closest<HTMLElement>('[data-scope]');
-      if (!view || !c) return;
+      // The slot, not the event target: a chip drag starts from a window listener, which has no closest().
+      const c = view?.slot.closest<HTMLElement>('[data-scope]');
+      if (!view || !c) return false;
       const r = c.getBoundingClientRect();
       const s = view.slot.getBoundingClientRect();
       const ox = s.left - r.left, oy = s.top - r.top;
       drag = { id, sx: e.clientX, sy: e.clientY, ox, oy, w: r.width, px: e.clientX, py: e.clientY };
-      patch(id, { lifted: true, moved: true, xp: (ox / r.width) * 100, y: oy, z: ++zc }, false);
+      patch(id, { lifted: true, moved: true, xp: (ox / r.width) * 100, y: oy, z: ++nextNoteZ }, false);
       // Held point from the note's centre: the pivot it swings about.
       startSwing(id, e.clientX - (s.left + s.width / 2), e.clientY - (s.top + s.height / 2), e.clientX, e.clientY);
       e.preventDefault();
+      return true;
     },
   };
 
@@ -548,7 +556,7 @@ export function mountBoard(root: HTMLElement) {
     openMenu(e.clientX, e.clientY, placeAt(t, e.clientX, e.clientY));
   });
 
-  $('[data-menu-add]')!.addEventListener('click', (e) => {
+  queryInBoard('[data-menu-add]')!.addEventListener('click', (e) => {
     e.stopPropagation();
     if (menuPlace) addNote(menuPlace);
   });
@@ -557,8 +565,8 @@ export function mountBoard(root: HTMLElement) {
   window.addEventListener('resize', closeMenu);
   compactMq.addEventListener('change', () => render());
 
-  const status = $('[data-demo-status]')!;
-  const redesignBtn = $<HTMLButtonElement>('[data-demo-action="redesign"]')!;
+  const status = queryInBoard('[data-demo-status]')!;
+  const redesignBtn = queryInBoard<HTMLButtonElement>('[data-demo-action="redesign"]')!;
 
   /** Sync the mock site class, button label and status copy with `demo.redesigned`. */
   function applyDemo() {
