@@ -20,6 +20,8 @@ interface Props {
   canonical?: boolean;
   /** schema.org structured data for this page, written into a JSON-LD script. */
   jsonLd?: Record<string, unknown>;
+  /** Asks search engines to keep this page out of their results. Pair it with leaving the page out of sitemap.xml. */
+  noindex?: boolean;
 }
 const DEFAULT_IMAGE = 'og-home.png';
 const DEFAULT_IMAGE_ALT = 'The headline &ldquo;Stick a note on any website.&rdquo; beside three sticky notes, one reading &ldquo;Hello, I&rsquo;m a note.&rdquo;';
@@ -28,11 +30,17 @@ const DEFAULT_IMAGE_ALT = 'The headline &ldquo;Stick a note on any website.&rdqu
 const NAMED_ENTITIES: Record<string, string> = {
   rsquo: '’', ldquo: '“', rdquo: '”', hellip: '…', middot: '·', copy: '©', larr: '←', amp: '&', lt: '<', gt: '>', quot: '"',
 };
+/** One entity from the decoder: a decimal code point, a hex code point, or a named entity. */
+function decodeEntityMatch(match: string, decimal?: string, hex?: string, name?: string): string {
+  if (decimal) return String.fromCodePoint(Number(decimal));
+  if (hex) return String.fromCodePoint(parseInt(hex, 16));
+  return NAMED_ENTITIES[name ?? ''] ?? match;
+}
+
 /** Turn &name;, &#digits; and &#xhex; into real characters for <title> and meta attributes. */
 const decodeEntities = (text: string) =>
-  text.replace(/&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi, (match, dec, hex, name) =>
-    dec ? String.fromCodePoint(Number(dec)) : hex ? String.fromCodePoint(parseInt(hex, 16)) : NAMED_ENTITIES[name] ?? match);
-const { title: titleProp, description: descriptionProp, image = DEFAULT_IMAGE, imageAlt: imageAltProp, canonical = true, jsonLd } = Astro.props;
+  text.replace(/&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi, decodeEntityMatch);
+const { title: titleProp, description: descriptionProp, image = DEFAULT_IMAGE, imageAlt: imageAltProp, canonical = true, jsonLd, noindex = false } = Astro.props;
 const title = decodeEntities(titleProp);
 const description = decodeEntities(descriptionProp);
 // The default image's alt text only belongs to the default image.
@@ -54,6 +62,7 @@ const pageUrl = canonical && Astro.site ? new URL(Astro.url.pathname, Astro.site
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
