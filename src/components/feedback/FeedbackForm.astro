@@ -1,0 +1,352 @@
+---
+/**
+ * The uninstall feedback form shown on /uninstalled/. Every question is optional.
+ * Behaviour lives in scripts/feedback/form.ts (counter, email check, sending, thank-you swap),
+ * and what gets posted is described in docs/feedback-endpoint.md.
+ * Option labels are static copy with entities, rendered with set:html, so never put visitor text there.
+ */
+import Icon from '../Icon.astro';
+import { href } from '../../config';
+
+// The id is what the form sends, so keep ids stable even when the wording changes.
+const reasons = [
+  { id: 'place', label: 'Notes didn&rsquo;t come back where I left them' },
+  { id: 'expected', label: 'It didn&rsquo;t do what I expected' },
+  { id: 'broke', label: 'Something broke or felt buggy' },
+  { id: 'inway', label: 'It got in the way of pages I use' },
+  { id: 'permissions', label: 'I wasn&rsquo;t comfortable with the permissions' },
+  { id: 'switched', label: 'I found something that suits me better' },
+  { id: 'moment', label: 'I only needed it for a moment' },
+  { id: 'other', label: 'Something else' },
+];
+const durations = [
+  { id: 'day', label: 'Under a day' },
+  { id: 'days', label: 'A few days' },
+  { id: 'weeks', label: 'A few weeks' },
+  { id: 'months', label: 'Months' },
+];
+const MESSAGE_LIMIT = 1000;
+---
+<form
+  class="feedback"
+  aria-label="Uninstall feedback"
+  novalidate
+  data-feedback-form
+  data-development={String(import.meta.env.DEV)}
+  data-message-limit={MESSAGE_LIMIT}
+>
+  <fieldset class="question">
+    <legend class="question-title">What made you uninstall?</legend>
+    <p class="question-hint">Pick as many as you like.</p>
+    <ul class="option-list">
+      {reasons.map((reason) => (
+        <li>
+          <label class="option">
+            <input type="checkbox" name="reason" value={reason.id} />
+            <span class="checkbox"><Icon name="check" size={12} stroke={3.4} color="var(--color-bg)" /></span>
+            <span set:html={reason.label} />
+          </label>
+          {reason.id === 'switched' && (
+            <div class="follow-up">
+              <div class="follow-up-clip">
+                <div class="follow-up-body">
+                  <label class="field-label" for="feedback-switched-to">What did you switch to?</label>
+                  <input id="feedback-switched-to" class="input" type="text" name="switchedTo" maxlength="100" autocomplete="off" placeholder="Optional" />
+                </div>
+              </div>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  </fieldset>
+
+  <fieldset class="question">
+    <legend class="question-title">How long did you use it?</legend>
+    <p class="question-hint">A rough idea is fine.</p>
+    <div class="duration">
+      {durations.map((duration) => (
+        <label class="duration-option">
+          <input type="radio" name="duration" value={duration.id} />
+          <span>{duration.label}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset class="question">
+    <legend class="question-title">Anything you&rsquo;d like to add?</legend>
+    <p class="question-hint">What went wrong, or what would have made you stay.</p>
+    <!-- A Kurippu note: tinted paper, a darker band, and the counter where the note's controls sit. -->
+    <div class="note-field">
+      <div class="note-band"><span id="feedback-count" class="note-count" data-feedback-count>0 / 1,000</span></div>
+      <textarea
+        name="message"
+        rows="6"
+        maxlength={MESSAGE_LIMIT}
+        placeholder="Write whatever is on your mind."
+        aria-label="Your note to us"
+        aria-describedby="feedback-count"
+        data-feedback-message
+      ></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset class="question">
+    <legend class="question-title">Can we follow up?</legend>
+    <p class="question-hint">Optional. We would only write about this feedback.</p>
+    <ul class="option-list">
+      <li>
+        <label class="option">
+          <input type="checkbox" name="reply" data-feedback-reply />
+          <span class="checkbox"><Icon name="check" size={12} stroke={3.4} color="var(--color-bg)" /></span>
+          <span>You can email me about this feedback</span>
+        </label>
+        <div class="follow-up">
+          <div class="follow-up-clip">
+            <div class="follow-up-body">
+              <label class="field-label" for="feedback-email">Email address</label>
+              <input
+                id="feedback-email"
+                class="input"
+                type="email"
+                name="email"
+                maxlength="254"
+                autocomplete="email"
+                placeholder="you@example.com"
+                aria-describedby="feedback-email-note feedback-email-error"
+                data-feedback-email
+              />
+              <p id="feedback-email-note" class="field-note">Only used to reply about this feedback. No newsletters, no lists.</p>
+              <p id="feedback-email-error" class="field-error" data-feedback-email-error hidden>
+                <Icon name="triangle-alert" size={14} />
+                <span data-feedback-email-error-text></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </fieldset>
+
+  <!-- A decoy for bots: people never see it or tab to it. If it is filled in, the form pretends to send. -->
+  <div class="trap" aria-hidden="true">
+    <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" data-feedback-trap /></label>
+  </div>
+
+  <div class="submit-area">
+    <div class="alert" role="alert" data-feedback-alert hidden>
+      <Icon name="triangle-alert" size={18} />
+      <p><strong data-feedback-alert-title></strong> <span data-feedback-alert-text></span></p>
+    </div>
+    <div class="actions">
+      <button type="submit" class="btn btn-primary big" data-analytics-id="uninstall-send-feedback" data-feedback-send>
+        <span data-feedback-send-label>Send feedback</span>
+      </button>
+      <a class="btn btn-secondary big" href={href()} data-analytics-id="uninstall-skip">No thanks, back to the site</a>
+    </div>
+    <p class="fine">Your answers are used only to improve Kurippu. <a href={href('privacy/')}>Read the privacy policy</a>.</p>
+  </div>
+</form>
+
+<script>
+  import { mountFeedbackForm } from '../../scripts/feedback/form';
+  mountFeedbackForm();
+</script>
+
+<style>
+  .feedback { display: flex; flex-direction: column; gap: 40px; }
+
+  /* Questions. Floating the legend lets it behave like an ordinary block heading. */
+  .question { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .question + .question { border-top: 1px solid var(--color-divider); padding-top: 28px; }
+  .question-title {
+    float: left;
+    width: 100%;
+    padding: 0;
+    margin: 0 0 6px;
+    font: 600 24px/1.2 var(--font-heading);
+    letter-spacing: -0.005em;
+  }
+  .question-title + * { clear: both; }
+  .question-hint { margin: 0 0 16px; font-size: 13px; line-height: 1.5; color: var(--color-neutral-700); }
+
+  /* Option rows: a hairline list like the FAQ, with a checkbox that draws its tick. */
+  .option-list { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--color-divider); }
+  .option-list > li { border-top: 1px solid var(--color-divider); }
+  .option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 46px;
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1.4;
+    transition: padding 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.15s;
+  }
+  .option:hover { padding-left: 6px; color: var(--color-accent-700); }
+  .option input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+  .checkbox {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid var(--color-neutral-600);
+    border-radius: 3px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .checkbox :global(svg) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.2s ease-out 0.05s;
+  }
+  .option:hover .checkbox { border-color: var(--color-accent); }
+  .option input:checked + .checkbox { background: var(--color-accent); border-color: var(--color-accent); }
+  .option input:checked + .checkbox :global(svg) { stroke-dashoffset: 0; }
+  .option input:focus-visible + .checkbox { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  /* A question that opens under a ticked option. The grid row grows from 0 to its content, and
+     visibility keeps the collapsed fields out of the tab order. */
+  .follow-up {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition: grid-template-rows 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0.25s;
+  }
+  .option:has(input:checked) + .follow-up {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .follow-up-clip { min-height: 0; overflow: hidden; }
+  .follow-up-body { padding: 0 0 16px 32px; }
+  .field-label { display: block; margin-bottom: 5px; font-size: 12px; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+  .field-note { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--color-neutral-700); }
+  .field-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 8px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-error);
+  }
+  .field-error[hidden] { display: none; }
+  .field-error :global(svg) { flex: none; margin-top: 2px; }
+
+  /* Inputs: Classical's .input, sized up for touch. 16px also stops iOS zooming in on focus. */
+  .input { min-height: 44px; padding: 8px 12px; font-size: 16px; }
+  .input::placeholder { color: var(--color-neutral-700); }
+  .input[aria-invalid='true'] { border-color: var(--color-error); }
+  .input[aria-invalid='true'] ~ .field-note { display: none; }
+
+  /* Length of use: a grid with a 1px gap over a divider-coloured ground draws the hairlines, however it wraps. */
+  .duration {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--color-divider);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .duration-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 7px 10px;
+    background: var(--color-bg);
+    font-size: 14px;
+    line-height: 1.3;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .duration-option input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+  .duration-option:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, var(--color-bg)); }
+  /* The chosen option gets a fill and a heavier weight, not just an outline, so it reads at a glance. */
+  .duration-option:has(input:checked) {
+    background: var(--color-accent-200);
+    color: var(--color-accent-800);
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1.5px var(--color-accent);
+  }
+  .duration-option:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  @media (max-width: 520px) {
+    .duration { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* The message field is a Kurippu note: the same paper and band as the demo notes (notes.css). */
+  .note-field {
+    background: oklch(0.93 0.05 85);
+    box-shadow: var(--shadow-md);
+    border-radius: 2px;
+  }
+  .note-field:focus-within { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  .note-band {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 12px;
+    background: oklch(0.89 0.065 85);
+    border-radius: 2px 2px 0 0;
+    font-size: 11px;
+    font-feature-settings: 'tnum';
+    color: var(--color-neutral-800);
+  }
+  .note-count.is-at-limit { font-weight: 600; color: var(--color-accent-800); }
+  .note-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 160px;
+    border: 0;
+    outline: none;
+    resize: vertical;
+    background: transparent;
+    padding: 14px 16px;
+    font: 15px/1.65 var(--font-body);
+    color: var(--color-neutral-900);
+  }
+  .note-field textarea::placeholder { color: var(--color-neutral-700); font-style: italic; }
+
+  .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* Send area: failure notice, buttons, fine print. */
+  .submit-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 28px;
+  }
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .alert[hidden] { display: none; }
+  .alert :global(svg) { flex: none; margin-top: 3px; color: var(--color-error); }
+  .alert p { margin: 0; }
+  .alert strong { font-weight: 600; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .big { font-size: 18px; padding: 14px 28px; }
+  @media (max-width: 520px) {
+    .actions .btn { flex: 1 1 100%; }
+  }
+  .fine { margin: 0; font-size: 13px; line-height: 1.55; color: var(--color-neutral-700); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .option, .checkbox, .checkbox :global(svg), .duration-option, .follow-up { transition: none; }
+  }
+</style>
