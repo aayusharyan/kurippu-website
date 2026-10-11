@@ -1,0 +1,10 @@
+# Points extension work and private security reports away from the blank-issue form.
+
+blank_issues_enabled: false
+contact_links:
+  - name: Extension issues
+    url: https://github.com/aayusharyan/kurippu/issues
+    about: Bugs and suggestions for the browser extension belong in the main Kurippu repository.
+  - name: Security or privacy report
+    url: https://github.com/aayusharyan/kurippu-website/blob/main/SECURITY.md
+    about: Please report security problems privately. Do not open a public issue.
