@@ -57,6 +57,7 @@
 }
 .note-seg button[aria-pressed='true'] { box-shadow: inset 0 0 0 1px var(--color-accent-700); }
 
+.note-min,
 .note-del {
   width: 24px;
   height: 24px;
@@ -69,6 +70,7 @@
   cursor: pointer;
   border-radius: 3px;
 }
+.note-min:hover,
 .note-del:hover { background: color-mix(in srgb, var(--color-text) 10%, transparent); }
 
 /* Edit mode: monospace textarea and colour swatches along the foot. */
@@ -237,4 +239,28 @@
 @media (prefers-reduced-motion: reduce) {
   .note-chip.is-new { animation: none; }
   .note-chip.is-leaving { animation: none; }
+}
+
+/* A minimised note: the card is hidden and the same paper chip stands in its place until clicked. */
+.note-mini { display: none; }
+.note-slot.is-min .note { display: none; }
+.note-slot.is-min .note-mini {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  cursor: grab;
+  touch-action: none;
+  outline-offset: 3px;
+  /* Swing offsets live on the slot, so a dragged chip tilts the same way an open note does. */
+  transform: translate(var(--tx, 0px), var(--ty, 0px)) rotate(calc(var(--rot, 0deg) + var(--swing, 0deg))) scale(var(--sc, 1));
+  animation: chip-in 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+.note-slot.is-lifted .note-mini { cursor: grabbing; box-shadow: var(--shadow-lg); }
+.note-slot.is-min .note-mini.is-leaving { animation: chip-out 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.25) forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .note-slot.is-min .note-mini,
+  .note-slot.is-min .note-mini.is-leaving { animation: none; }
 }
