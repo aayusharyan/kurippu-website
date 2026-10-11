@@ -15,7 +15,7 @@ Kurippu adds sticky notes to the pages you browse. Notes are written in Markdown
 ## Pages
 
 - [Home](${absoluteUrl(site)}): what Kurippu does, how it works, sync and backup, privacy, keyboard shortcuts, browser support, FAQ. The whole page is a live sticky-note demo: notes can be added anywhere on it
-- [Privacy policy](${absoluteUrl(site, 'privacy/')}): separate disclosures for extension data, optional Drive backups and consent-based analytics on the product website
+- [Privacy policy](${absoluteUrl(site, 'privacy/')}): separate disclosures for extension data, optional Drive backups, uninstall feedback and consent-based analytics on the product website
 - [Chrome Web Store listing](https://chromewebstore.google.com/detail/gaibhdliodoodaiohhabjakiejeldikh): install Kurippu
 
 ## Optional
