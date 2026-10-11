@@ -11,6 +11,8 @@
   /* Semantic highlight for decorative marks (underlines, strokes), not CTAs. */
   --color-mark: #34747b;
   --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
+  /* Form errors only (a field that failed validation, a send that failed). Always paired with an icon and words. */
+  --color-error: oklch(0.47 0.13 30);
 
   /* Tonal ramps - generated in OKLCH on one shared lightness scale, so the
      same step of any role matches the others in visual value. */
@@ -77,8 +79,12 @@ body {
 h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
 
 /* Unused here: framed, sepia-toned media plate kept for the design system. */
-.plate{filter:sepia(0.22) saturate(0.82) contrast(1.05);box-sizing:border-box;
-  border:6px solid var(--color-surface);outline:1px solid var(--color-divider)}
+.plate {
+  filter: sepia(0.22) saturate(0.82) contrast(1.05);
+  box-sizing: border-box;
+  border: 6px solid var(--color-surface);
+  outline: 1px solid var(--color-divider);
+}
 
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; }
