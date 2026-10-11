@@ -25,7 +25,7 @@ Kurippu is a free and open-source browser extension that lets you attach sticky 
 
 - Add a note: right-click anywhere on a page and choose "Add sticky note here" from the browser's own menu.
 - If a site keeps right-click to itself (map apps, for example), hold Command (Mac) or Ctrl (Windows, Linux) and click instead. Links, buttons and text fields behave exactly as before.
-- Write the note in Markdown. While you edit you see the Markdown; in preview it is neatly formatted. Pick a color for the note.
+- Write the note in Markdown. It stays in edit until you click Preview or press Command or Ctrl + Enter. In preview it is neatly formatted. That choice is saved with the note, so a refresh keeps it. Pick a color for the note.
 - Close the tab. The note is there when you come back.
 - Notes can be dragged, minimised or deleted. Notes sit beneath a site's menus, pop-ups and dialogs, so they do not cover them. You can hide all notes on a site from the toolbar.
 - The home page lists keyboard shortcuts, which can be changed at chrome://extensions/shortcuts. The shortcuts are proposals and may change while the extension is being built.
@@ -57,14 +57,16 @@ The toolbar popup and options page shown on the home page are mockups. The exten
 - Kurippu has no user account system. The optional Google sign-in connects the extension directly to Drive.
 - A Drive backup is encrypted on the device before upload. Its key is derived from the Google account, so securing that account is important; 2-Step Verification is recommended.
 - After a visitor consents, the website can use Google Analytics for page views, traffic sources, campaign parameters and every button and link click. Demo note text is excluded, screen recording and replay are not used, and advertising storage, advertising user data, advertising personalization and Google signals are disabled. Analytics information is shared only with Google as detailed in the privacy policy.
+- Pressing Send feedback on the uninstall page submits the answers shown in the form to api.kurippu.com. The stored record does not include an IP address, user-agent string, timestamp or other metadata. Aayush Sinha keeps the submission in a private database in Japan, is the only person who can access it, and shares it with no third party. It is used only to improve Kurippu and to reply when requested, and is retained without a fixed expiry until deletion is requested at hello@yush.dev. The answers are not stored in the browser or sent to Google Analytics, although Analytics may record the Send feedback button click after consent.
 - The extension retains a page address only when a note is attached there. It does not assemble a record of other browsing.
 - Website scripts cannot read notes because the extension draws them inside a sealed layer. Note content is not sent to the website.
+- If the extension is installed, it tells the home page that it is there (a short identifier and its version number, never notes). On every home-page load, the page uses that only to play a short welcome animation and to show a footer link that plays it again. The site does not save or track whether the animation has played. The message stays inside the browser tab, is not sent anywhere, and the replay link is excluded from analytics click measurement. The animation is skipped when the system asks to reduce motion.
 - Removing Kurippu clears its data from browser storage.
 - Full policy: ${absoluteUrl(site, 'privacy/')}
 
 ### What Kurippu stores for each note
 
-The text you wrote, its color and tags, the address of the page, when it was created and edited, and the information needed to put it back in place (a reference to the nearby page element, a short snippet of that element's text, and the note's position).
+The text you wrote, its color and tags, whether you left it in edit or preview, the address of the page, when it was created and edited, and the information needed to put it back in place (a reference to the nearby page element, a short snippet of that element's text, and the note's position). The edit-or-preview choice is saved with the note, so a refresh keeps it, and it is included in browser sync and an optional Drive backup.
 
 ### Permissions and why
 
