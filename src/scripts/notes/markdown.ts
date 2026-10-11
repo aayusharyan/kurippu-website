@@ -10,18 +10,25 @@ export type Line =
 const clean = (s: string) => s.replace(/\*\*|`|__/g, '').replace(/(^|\s)\*(\S[^*]*)\*/g, '$1$2');
 
 /**
- * Classify each non-empty line. Todo must run before plain list, or `[ ]` items become `li`.
- * Headings accept `# …` or a whole-line `**bold**`.
+ * Classify one non-empty line. Todo must run before plain list, or `[ ]` items become `li`.
+ * Headings accept `# …` or a whole-line `**bold**`. Blank lines are not passed here.
  */
+function classifyLine(raw: string, index: number): Line {
+  const todo = raw.match(/^\s*[-*] \[( |x|X)\] ?(.*)$/);
+  if (todo) return { kind: 'todo', text: clean(todo[2]), done: todo[1] !== ' ', index };
+  const item = raw.match(/^\s*[-*] (.*)$/);
+  if (item) return { kind: 'li', text: clean(item[1]) };
+  const heading = raw.match(/^#+ (.*)$/) || raw.match(/^\*\*(.+)\*\*$/);
+  if (heading) return { kind: 'h', text: clean(heading[1]) };
+  return { kind: 'p', text: clean(raw) };
+}
+
+/** Classify each non-empty line, in order. */
 export function parse(text: string): Line[] {
   const lines: Line[] = [];
   text.split('\n').forEach((raw, index) => {
     if (!raw.trim()) return;
-    let m: RegExpMatchArray | null;
-    if ((m = raw.match(/^\s*[-*] \[( |x|X)\] ?(.*)$/))) lines.push({ kind: 'todo', text: clean(m[2]), done: m[1] !== ' ', index });
-    else if ((m = raw.match(/^\s*[-*] (.*)$/))) lines.push({ kind: 'li', text: clean(m[1]) });
-    else if ((m = raw.match(/^#+ (.*)$/)) || (m = raw.match(/^\*\*(.+)\*\*$/))) lines.push({ kind: 'h', text: clean(m[1]) });
-    else lines.push({ kind: 'p', text: clean(raw) });
+    lines.push(classifyLine(raw, index));
   });
   return lines;
 }
