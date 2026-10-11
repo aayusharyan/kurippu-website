@@ -21,7 +21,9 @@ There are two separate things here. Don't mix them up.
 - **The extension has no analytics.** No analytics, trackers, tracking pixels, crash reporters or ads. That promise belongs to the extension, which is the product. This site exists to sell the extension, so its copy (landing page, privacy policy, `llms.txt`, `llms-full.txt`) says so, and nothing you write may claim, imply or add anything that contradicts it. The extension's source is not in this repository.
 - **The website may measure its own visitors, within limits.** Google Analytics (GA4) is the website's only approved analytics service. It measures how visitors find and use the product website (for example Add to Chrome clicks), not anything the extension does, so it is not a breach of the promise above and you shouldn't treat it as one. Its limits: it must load only after explicit consent, advertising storage, advertising user data, advertising personalization and Google signals must stay disabled, and visitor-written demo note content must never be sent.
 
-Never add other analytics, tag managers, third-party scripts or embeds, hosted fonts, CDNs, cookies, or requests to any domain the project doesn't control. The site stores demo notes and the Google Analytics consent choice in `localStorage`; GA4 may set first-party analytics cookies after consent. If a change alters what the site collects, sends or stores, update `src/pages/privacy.astro` too and tell the user.
+Never add other analytics, tag managers, third-party scripts or embeds, hosted fonts, CDNs, cookies, or requests to any domain the project doesn't control. The site stores demo notes and the Google Analytics consent choice in `localStorage`; GA4 may set first-party analytics cookies after consent. The site does not store whether the welcome animation has played. The extension's presence signal must stay inside the tab: never send it to analytics or any server, and mark any control that only extension users can see `data-analytics-ignore` (see README → "The welcome ribbon" and `src/scripts/welcome/`). If a change alters what the site collects, sends or stores, update `src/pages/privacy.astro` too and tell the user.
+
+The uninstall feedback form (`/uninstalled/`) is the one place the site can send visitor-written text, and only to the URL hardcoded in `src/scripts/feedback/submit.ts`, only when the visitor presses Send. Keep it that way: never send those answers to analytics, never store them in the browser and never post them anywhere else. The endpoint is `https://api.kurippu.com/uninstall/`, and `privacy.astro` says what is collected and for how long. See `docs/feedback-endpoint.md`.
 
 ### 3. Stay in scope
 
@@ -34,18 +36,27 @@ Never add other analytics, tag managers, third-party scripts or embeds, hosted f
 
 ### 4. Do not use em dashes
 
-**Never write an em dash (—, U+2014)** anywhere: site copy, code, comments, documentation, commit messages (if you are asked to write any) or your replies to the user. Use another form of punctuation instead:
+**Never write an em dash (-, U+2014)** anywhere: site copy, code, comments, documentation, commit messages (if you are asked to write any) or your replies to the user. Use another form of punctuation instead:
 
 - a normal hyphen (`-`) with spaces around it, as in the page titles ("Kurippu - Privacy policy")
 - a comma, colon or parentheses
 - a full stop, splitting the sentence in two
+
+### 5. Keep the code human-readable (FOSS)
+
+This is a **FOSS** repository. People read and change this code, so write for humans first.
+
+- Use clear, descriptive names for variables, functions and files. Prefer obvious words over clever abbreviations.
+- Keep code organized: related logic together, small focused functions, a structure a new contributor can follow without a tour.
+- When readability and a dense one-liner conflict, and the cost is not a real performance problem, prefer the readable form. Named functions beat opaque one-line lambdas or arrow chains that hide intent.
+- Dense style is fine only where the surrounding code already uses it for a clear reason (for example a trivial callback), or where a tighter form is needed for a measured hot path. Default to clarity.
 
 ## Project snapshot
 
 The landing page (`/`), privacy policy (`/privacy/`) and 404 page for Kurippu, a Chrome extension for sticking notes on websites. The site exists to present and sell the extension. The extension's source is **not** in this repository.
 
 - **Stack:** Astro 7 (static output), TypeScript (strict), plain CSS. No UI framework. Node ≥ 22.12.
-- **Client JS:** the live sticky-note demo (`src/scripts/notes/`), scroll-in animations (`src/scripts/arrivals.ts`), a tiny inline platform check in `src/layouts/Base.astro`, and the consent-gated Google Analytics loader (`src/components/AnalyticsConsent.astro`).
+- **Client JS:** the live sticky-note demo (`src/scripts/notes/`), scroll-in animations (`src/scripts/arrivals.ts`), the welcome ribbon for visitors who have the extension (`src/scripts/welcome/`), the uninstall feedback form (`src/scripts/feedback/`), a tiny inline platform check in `src/layouts/Base.astro`, and the consent-gated Google Analytics loader (`src/components/AnalyticsConsent.astro`).
 - **No tests and no linter.** The checks are the type-checker and the build.
 
 ## Commands
@@ -62,25 +73,28 @@ Before you report a task as done, run `npm run check` and `npm run build` and ma
 
 ## Where things live
 
-| To change… | Look in… |
-| --- | --- |
-| Landing-page copy or layout | `src/components/sections/*.astro`, composed in `src/pages/index.astro` |
-| Privacy policy | `src/pages/privacy.astro` (update the "Effective …" date when the policy materially changes) |
-| 404 page | `src/pages/404.astro` (the host serves it for any unknown URL, so keep its links and assets root-relative with `href()`) |
-| Sitemap, `robots.txt`, `llms.txt`, `llms-full.txt` | `src/pages/sitemap.xml.ts`, `robots.txt.ts`, `llms.txt.ts`, `llms-full.txt.ts`, all built from `site` in `astro.config.mjs` |
-| `<head>`, meta tags, favicons | `src/layouts/Base.astro` |
-| Google Analytics consent and loading | `src/components/AnalyticsConsent.astro`, with the measurement ID read in `src/config.ts` |
-| Colours, fonts, spacing tokens | `src/styles/classical.css` (use these tokens, don't hard-code values) |
-| Page-level and demo styles | `src/styles/global.css`, `src/styles/notes.css` |
-| The live demo | `src/scripts/notes/` (`board.ts` is the controller, `note.ts` renders one note, `physics.ts` is the swing, `markdown.ts` is the tiny Markdown subset, `seeds.ts` holds the starter notes) |
-| Icons | `src/scripts/icons.ts` (Lucide paths only; see `THIRD_PARTY_NOTICES.md`) |
-| Google Analytics ID, base-path helper, site version (read from `package.json`, shown in the footer) | `src/config.ts` |
+| To change…                                                                                          | Look in…                                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Landing-page copy or layout                                                                         | `src/components/sections/*.astro`, composed in `src/pages/index.astro`                                                                                                                    |
+| Privacy policy                                                                                      | `src/pages/privacy.astro` (update the "Effective …" date when the policy materially changes)                                                                                              |
+| Uninstall feedback page (`/uninstalled/`, `noindex`, not in the sitemap)                            | `src/pages/uninstalled.astro`, `src/components/feedback/` (form and thank-you view), `src/scripts/feedback/` (`form.ts`, `submit.ts`); the contract is in `docs/feedback-endpoint.md`    |
+| 404 page                                                                                            | `src/pages/404.astro` (the host serves it for any unknown URL, so keep its links and assets root-relative with `href()`)                                                                  |
+| Sitemap, `robots.txt`, `llms.txt`, `llms-full.txt`                                                  | `src/pages/sitemap.xml.ts`, `robots.txt.ts`, `llms.txt.ts`, `llms-full.txt.ts`, all built from `site` in `astro.config.mjs`                                                               |
+| `<head>`, meta tags, favicons                                                                       | `src/layouts/Base.astro`                                                                                                                                                                  |
+| Google Analytics consent and loading                                                                | `src/components/AnalyticsConsent.astro` (a control marked `data-analytics-ignore` is not click-measured), with the measurement ID read in `src/config.ts`                                 |
+| The welcome ribbon (easter egg for visitors who have the extension)                                 | `src/scripts/welcome/` (`presence.ts`, `index.ts`, `ribbon.ts`) and `src/styles/welcome.css`; listen + ribbon behaviour is in README → "The welcome ribbon"                             |
+| Colours, fonts, spacing tokens                                                                      | `src/styles/classical.css` (use these tokens, don't hard-code values)                                                                                                                     |
+| Page-level and demo styles                                                                          | `src/styles/global.css`, `src/styles/notes.css`                                                                                                                                           |
+| The live demo                                                                                       | `src/scripts/notes/` (`board.ts` is the controller, `note.ts` renders one note, `physics.ts` is the swing, `markdown.ts` is the tiny Markdown subset, `seeds.ts` holds the starter notes) |
+| Icons                                                                                               | `src/scripts/icons.ts` (Lucide paths only; see `THIRD_PARTY_NOTICES.md`)                                                                                                                  |
+| Google Analytics ID, base-path helper, site version (read from `package.json`)                      | `src/config.ts`                                                                                                                                                                           |
 
 ## Conventions
 
 - Two-space indent, single quotes, semicolons, LF endings (see `.editorconfig`). Match the surrounding code.
 - Astro components keep styles in a scoped `<style>` block. Short doc comments explain **why**, not what.
 - Every animation needs a `prefers-reduced-motion: reduce` fallback.
+- The welcome ribbon reuses the site's own `.note-chip` (`notes.css`) and `CHIP_ROTS` and `HUES` (`seeds.ts`), so it matches the install stack. If you change the chip, check the ribbon too.
 - Use semantic HTML, give interactive controls accessible names, and keep everything keyboard-operable.
 - Links that leave the site (GitHub, Google, `mailto:`) open in a new tab: write `target="_blank" rel="noopener noreferrer"` on the `<a>`, or set `newTab: true` on a `SiteFooter` link. Chrome Web Store links are the exception, because that is the product, and stay in the same tab. Internal links and `#` anchors stay in the same tab too.
 - Write typographic punctuation in markup as HTML entities, not literal characters: `&rsquo;` `&ldquo;` `&rdquo;` `&hellip;` `&middot;` `&larr;` `&copy;`, and `&#8984;` and `&#8997;` for the Command and Option key symbols (they have no named entity). Entities only decode as markup text, so copy held in a frontmatter array is rendered with `set:html` (static copy only, never visitor text). The `title`, `description` and `imageAlt` props of `Base` may use entities too: `Base` decodes them before they reach `<title>` and the `<meta>` tags. Keep the literal characters in JSON-LD (so a `description` that is also fed to JSON-LD must have none), the notes scripts and the `.txt` endpoints, where an entity would show up as text.
