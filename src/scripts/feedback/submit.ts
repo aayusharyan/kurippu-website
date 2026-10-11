@@ -1,5 +1,5 @@
 // Sends the uninstall feedback form's answers to the Kurippu API.
-// The wire format is documented in docs/feedback-endpoint.md. Nothing here touches Google Analytics, and
+// The wire format is documented in README.md under "The uninstall feedback page". Nothing here touches Google Analytics, and
 // the answers are never written to storage.
 
 /** What a visitor chose to tell us. Every field is optional, and empty ones are left out. */
