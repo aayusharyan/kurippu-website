@@ -1,0 +1,46 @@
+/* The welcome ribbon (scripts/welcome/ribbon.ts). Each chip is the site's own .note-chip, so its size, colour and
+   shadow come from notes.css; this file only lays the chips out and animates them. Global because the chips are built at runtime. */
+
+/* Above the notes (z 20+), below the demo menu, toast and reset button (1000) and the analytics panel (10000).
+   --cols, --pitch and --chip-ms are set by the script. */
+.welcome-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--pitch));
+  grid-auto-rows: var(--pitch);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* .note-chip tilts with `transform`. Here the animation owns `transform`, so the tilt moves to `rotate`. */
+.welcome-layer .welcome-chip {
+  margin: calc((var(--pitch) - 26px) / 2);
+  transform: none;
+  rotate: var(--rot);
+  translate: var(--jx) var(--jy);
+  opacity: 0;
+  animation: welcome-chip var(--chip-ms) both;
+}
+
+/* The notes' own chip-in (0.34s, overshoot), a short rest, then chip-out, which is chip-in played backwards. */
+@keyframes welcome-chip {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) scale(1.3) rotate(-12deg);
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.25);
+  }
+  41.5% { opacity: 1; transform: none; }
+  58.5% {
+    opacity: 1;
+    transform: none;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.25);
+  }
+  100% { opacity: 0; transform: translateY(-14px) scale(1.3) rotate(-12deg); }
+}
+
+/* The script never starts the ribbon under reduced motion; this keeps it hidden even if a layer exists. */
+@media (prefers-reduced-motion: reduce), print {
+  .welcome-layer { display: none; }
+}
