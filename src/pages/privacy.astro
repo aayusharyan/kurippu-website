@@ -13,8 +13,11 @@ const permissions = [
   ['Read and change data on websites', 'Places notes on visited pages and reconnects them to their chosen page elements.'],
   ['Context menus', 'Provides the &ldquo;Add sticky note here&rdquo; option when you right-click.'],
   ['Storage', 'Keeps note data locally and makes browser sync available.'],
+  ['Unlimited storage', 'Removes the browser&rsquo;s local storage quota so a large note collection is not evicted or capped.'],
+  ['Active tab', 'Temporarily grants access after your action, including on local file pages when you allow file access.'],
   ['Identity', 'Connects your Google account after you opt into Drive backup.'],
-  ['Alarms', 'Triggers scheduled backups at the hourly or daily interval you select.'],
+  ['Alarms', 'Triggers backups after changes or at the hourly or daily interval you select, and retries temporary failures.'],
+  ['Scripting', 'Restores the note engine on a tab when it is not already loaded, including after an extension update.'],
 ];
 ---
 <Base
@@ -37,22 +40,24 @@ const permissions = [
 
         <section>
           <h2>Data attached to a note</h2>
-          <p class="prose">A saved note consists of its written content, color, tags, creation and edit times, whether you left it open for editing or showing the formatted preview, and the address of the page where you made it. Kurippu also records only the placement details required to restore that note: its page position, a reference to the closest relevant element and a brief sample of that element&rsquo;s text. It does not retain other material from the websites you browse. That edit-or-preview choice is saved with the note, so it is still there after a refresh, and it travels with the note through browser sync and an optional Drive backup.</p>
+          <p class="prose">A saved note consists of its written content, color, tags, creation and edit times, whether it is minimized, whether you left it open for editing or showing the formatted preview, the address of the page where you made it and up to 120 characters of that page&rsquo;s title. The title helps you find the note from the options page.</p>
+          <p class="prose">Kurippu also records only the placement details required to restore that note: its page position, a reference to the closest relevant element and a brief sample of that element&rsquo;s text. It does not retain other material from the websites you browse. Internal revision identifiers record which device changed each part of a note so browser sync and Drive backup can merge edits without relying on device clocks. These identifiers are randomly generated and are not tied to your name or account.</p>
         </section>
 
         <section>
           <h2>Storage locations</h2>
           <dl>
             <dt>Your device</dt><dd>The primary copy lives in storage assigned to Kurippu by your browser. Without sync or backup, it remains on that device.</dd>
-            <dt>Your browser account</dt><dd>When browser sync is enabled, your browser provider transfers Kurippu data among your signed-in devices. The provider handles that synced copy according to its own privacy policy.</dd>
+            <dt>Your browser account</dt><dd>When browser sync is enabled, your browser provider transfers note records and their merge metadata among your signed-in devices. Settings, Drive connection details and device-only status are not put in browser sync. The provider handles the synced copy according to its own privacy policy.</dd>
             <dt>Your Google Drive</dt><dd>A backup is placed there only after you enable the optional Drive feature described next.</dd>
           </dl>
         </section>
 
         <section>
           <h2>Optional Drive backups</h2>
-          <p class="prose">Kurippu does not activate this feature until you choose it and sign in to Google. The permission it requests is limited to a private app folder, where the extension maintains one backup file. That scope does not allow Kurippu to view, open or modify the rest of your Drive. The extension also obtains the connected account&rsquo;s email address and ID. It displays the email in settings for account identification and uses the ID when deriving the backup&rsquo;s encryption key.</p>
-          <p class="prose">Encryption happens locally before the file is uploaded, and the extension communicates with Google without passing data through a Kurippu server. Since the encryption key is based on your Google account, protecting that account protects the backup. We recommend enabling 2-Step Verification.</p>
+          <p class="prose">Kurippu does not activate this feature until you choose it and sign in to Google. The permission it requests is limited to a private app folder. The extension keeps a canonical current backup there, but an older-format file or same-name copies created by simultaneous first backups may remain as recovery sources. Kurippu reads and merges every valid copy instead of silently discarding one. This scope does not allow Kurippu to view, open or modify the rest of your Drive.</p>
+          <p class="prose">The extension obtains the connected account&rsquo;s email address and stable ID after you opt in. It displays the email in settings for account identification and uses the ID when deriving the backup&rsquo;s encryption key. The encrypted backup also contains its save time, a general browser-and-operating-system label, randomly generated writer and snapshot identifiers, merge lineage and the note records. Backups can run after changes, hourly or daily, according to the schedule you select.</p>
+          <p class="prose">Encryption happens locally before the file is uploaded, and the extension talks to Google directly. Your notes are not sent to us. Since the encryption key is based on your Google account, protecting that account protects the backup. We recommend enabling 2-Step Verification.</p>
           <p class="boxed">Kurippu&rsquo;s use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
         </section>
 
@@ -65,8 +70,13 @@ const permissions = [
         </section>
 
         <section>
+          <h2>Demo notes on this website</h2>
+          <p class="prose">Notes you add to the live demo, including their text, appearance and position, are saved in this browser&rsquo;s <code>localStorage</code> as <code>kurippu-site-notes-v6</code>. They stay on this device and are not sent to us or to Google Analytics. Use <i>Reset notes</i> on the home page, or clear this site&rsquo;s stored data in your browser, to remove them.</p>
+        </section>
+
+        <section>
           <h2>Uninstall feedback</h2>
-          <p class="prose">The uninstall feedback page asks why you removed Kurippu. Every question is optional, and nothing is sent unless you press <i>Send feedback</i>. The form sends the submission to <code>api.kurippu.com</code>, and it contains only the answers shown in the form: the reasons you selected, how long you used Kurippu, what you switched to if you chose to say, your free-text message, and your email address if you asked for a reply. No IP address, user-agent string, timestamp or other metadata is added to the stored feedback record.</p>
+          <p class="prose">The uninstall feedback page asks why you removed Kurippu. Every question is optional, and nothing is sent unless you press <i>Send feedback</i>. The form sends the submission to <code>api.kurippu.com</code>, and it contains a numeric payload version plus only the answers shown in the form: the reasons you selected, how long you used Kurippu, what you switched to if you chose to say, your free-text message, and your email address if you asked for a reply. No IP address, user-agent string, timestamp or other metadata is added to the stored feedback record.</p>
           <p class="prose">The submission is kept in Aayush Sinha&rsquo;s private database in Japan. Only Aayush Sinha can access it, and no third party receives or processes the feedback. It is used only to improve Kurippu and, when you request a reply, to respond about your feedback. It is kept without a fixed expiry until you ask for it to be removed.</p>
           <p class="prose">The answers are not stored in your browser and are never sent to Google Analytics. If you have allowed website analytics, Google Analytics may record that the <i>Send feedback</i> button was pressed, but it receives none of the answers. To ask what feedback is held about you or request its deletion, email <a href="mailto:hello@yush.dev" target="_blank" rel="noopener noreferrer">hello@yush.dev</a>.</p>
         </section>
@@ -80,7 +90,7 @@ const permissions = [
         <section>
           <h2>Limits on extension data use</h2>
           <ul>
-            <li>No Kurippu-operated server receives, holds or forwards note data.</li>
+            <li>Kurippu does not receive, hold or forward your notes.</li>
             <li>Analytics, tracking pixels and crash-reporting services are absent from the extension.</li>
             <li>Kurippu displays no advertising and does not sell or rent data. The website sends analytics information only to Google under the terms above.</li>
             <li>Kurippu does not compile a browsing history. It retains an address only when you attach a note to that page.</li>
@@ -99,7 +109,7 @@ const permissions = [
 
         <section id="managing-and-deleting-your-data">
           <h2>Managing and deleting your data</h2>
-          <p class="prose">Individual notes can be changed or removed at any time. From the options page, you can download the complete collection as Markdown or JSON, or erase every note. Disconnecting Google Drive ends future backups. To delete its existing backup as well, remove Kurippu&rsquo;s data from <i>Manage apps</i> in Drive settings, then revoke the connection at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>. Removing the extension clears the Kurippu data held by your browser.</p>
+          <p class="prose">Individual notes can be changed or moved to Trash at any time, and the Trash view can delete them forever. From the options page, you can download all your notes as plain, unencrypted JSON. Disconnecting Google Drive ends future backups. To delete every current, legacy and duplicate backup copy as well, remove Kurippu&rsquo;s data from <i>Manage apps</i> in Drive settings, then revoke the connection at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>. Removing the extension clears the Kurippu data held by your browser.</p>
         </section>
 
         <section>
