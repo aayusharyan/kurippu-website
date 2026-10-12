@@ -19,7 +19,7 @@ Contact: hello@yush.dev
 
 ## What Kurippu is
 
-Kurippu is a free and open-source browser extension that lets you attach sticky notes to any web page. A note stays on the page it was written on and comes back when you return to that page, including on your other computers. There are no plans, no "pro" tier and no trial, and there is no server to pay for.
+Kurippu is a free and open-source browser extension that lets you attach sticky notes to any web page. A note stays on the page it was written on and comes back when you return to that page, including on your other computers. There are no plans, no "pro" tier, no trial and nothing to subscribe to.
 
 ## How you use it
 
@@ -41,23 +41,25 @@ The toolbar popup and options page shown on the home page are mockups. The exten
 
 - The toolbar popup lists every note on the page you are on. Click one to jump to it. Notes that lost their spot wait there to be placed. Sharing your screen? One switch hides every note.
 - The options page ("the everything page") shows all notes by site or by date. You can search them, filter by color or #tag, and export or import in bulk.
-- Export everything as Markdown or JSON from the options page. Import takes the same files back, on any browser.
+- Export all your notes as plain, unencrypted JSON from the options page. Import takes that file back on any browser.
 
 ## Sync and backup
 
 - Browser sync works out of the box: if you are signed into your browser, your notes sync to your other computers with nothing to set up. Browsers give each extension 100 KB of sync space, which is roughly 250 short notes.
-- Google Drive backup is optional and off until you sign in with Google. Kurippu keeps one encrypted backup file in a hidden app folder in your own Drive. It does not clutter your Drive and cannot see your other files. There is no size cap. Backups can run after every change, hourly or daily.
+- Google Drive backup is optional and off until you sign in with Google. Kurippu keeps a canonical encrypted backup in a hidden app folder in your own Drive. Older-format files or duplicates from simultaneous first backups may remain as recovery sources, and every valid copy is merged. The Drive scope cannot see your other files. There is no size cap. Backups can run after every change, hourly or daily.
 - On a new laptop, sign in and Kurippu finds the backup and merges it in. Nothing gets overwritten.
 - When browser sync fills up, new notes keep saving on your computer and Kurippu nudges you to turn on Drive backup. Once it is on, there is no limit.
 
 ## Privacy
 
 - Extension data and website analytics are separate. The extension contains no analytics, tracking pixels, crash reporters or advertising.
-- Kurippu operates no server that accepts, keeps or passes along notes. Notes are held by your browser and can also be placed in your own Google Drive when you enable backup.
+- Your notes are not sent to us. They are held by your browser and can also be placed in your own Google Drive when you enable backup.
 - Kurippu has no user account system. The optional Google sign-in connects the extension directly to Drive.
+- After Drive opt-in, the extension receives the connected Google account's email and stable ID. It shows the email in settings and uses the ID to derive the encryption key. It does not request the Google profile scope or read the browser-profile email.
 - A Drive backup is encrypted on the device before upload. Its key is derived from the Google account, so securing that account is important; 2-Step Verification is recommended.
 - After a visitor consents, the website can use Google Analytics for page views, traffic sources, campaign parameters and every button and link click. Demo note text is excluded, screen recording and replay are not used, and advertising storage, advertising user data, advertising personalization and Google signals are disabled. Analytics information is shared only with Google as detailed in the privacy policy.
-- Pressing Send feedback on the uninstall page submits the answers shown in the form to api.kurippu.com. The stored record does not include an IP address, user-agent string, timestamp or other metadata. Aayush Sinha keeps the submission in a private database in Japan, is the only person who can access it, and shares it with no third party. It is used only to improve Kurippu and to reply when requested, and is retained without a fixed expiry until deletion is requested at hello@yush.dev. The answers are not stored in the browser or sent to Google Analytics, although Analytics may record the Send feedback button click after consent.
+- Pressing Send feedback on the uninstall page submits a numeric payload version and the answers shown in the form to api.kurippu.com. The stored record does not include an IP address, user-agent string, timestamp or other metadata. Aayush Sinha keeps the submission in a private database in Japan, is the only person who can access it, and shares it with no third party. It is used only to improve Kurippu and to reply when requested, and is retained without a fixed expiry until deletion is requested at hello@yush.dev. The answers are not stored in the browser or sent to Google Analytics, although Analytics may record the Send feedback button click after consent.
+- Notes added to the website's live demo, including their text, appearance and position, stay in that browser's local storage under kurippu-site-notes-v6. Reset notes or clearing the site's stored data removes them. They are not sent to us or to Google Analytics.
 - The extension retains a page address only when a note is attached there. It does not assemble a record of other browsing.
 - Website scripts cannot read notes because the extension draws them inside a sealed layer. Note content is not sent to the website.
 - If the extension is installed, it tells the home page that it is there (a short identifier and its version number, never notes). On every home-page load, the page uses that only to play a short welcome animation and to show a footer link that plays it again. The site does not save or track whether the animation has played. The message stays inside the browser tab, is not sent anywhere, and the replay link is excluded from analytics click measurement. The animation is skipped when the system asks to reduce motion.
@@ -66,15 +68,18 @@ The toolbar popup and options page shown on the home page are mockups. The exten
 
 ### What Kurippu stores for each note
 
-The text you wrote, its color and tags, whether you left it in edit or preview, the address of the page, when it was created and edited, and the information needed to put it back in place (a reference to the nearby page element, a short snippet of that element's text, and the note's position). The edit-or-preview choice is saved with the note, so a refresh keeps it, and it is included in browser sync and an optional Drive backup.
+The text you wrote, its color and tags, whether it is minimized, whether you left it in edit or preview, the address of the page, up to 120 characters of the page title, when it was created and edited, and the information needed to put it back in place (a reference to the nearby page element, a short snippet of that element's text, and the note's position). Random internal revision identifiers let browser sync and Drive backup merge edits without using device clocks.
 
 ### Permissions and why
 
 - Read and change data on websites: to draw your notes on the pages you visit and find the element each note is pinned to.
 - Context menus: to add "Add sticky note here" to the right-click menu.
 - Storage: to save notes on your device and in browser sync.
+- Unlimited storage: to remove the local storage quota for large note collections.
+- Active tab: to grant temporary access after your action, including on local file pages when file access is allowed.
 - Identity: to sign in with Google, only when you turn on Drive backup.
-- Alarms: to run hourly or daily backups if you pick those schedules.
+- Alarms: to back up after changes, run hourly or daily schedules, and retry temporary failures.
+- Scripting: to restore the note engine when a tab does not already have it, including after an extension update.
 
 ## Open source
 
@@ -111,7 +116,7 @@ Q: Will notes cover the site's menus?
 A: No. They sit beneath menus, pop-ups and dialogs. You can minimise any note, or hide all of them on a site from the toolbar.
 
 Q: How do I get my notes out?
-A: From the options page, export everything as Markdown or JSON. Import takes the same files back, on any browser.
+A: From the options page, export all your notes as plain JSON. Import takes that file back on any browser.
 
 ## About the name
 
