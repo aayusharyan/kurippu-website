@@ -186,20 +186,38 @@ jobs:
           git tag --annotate "$TAG" --message "Release ${TAG}"
           git push origin "$TAG"
 
+      # Commit subjects since the previous tag. The first release has no
+      # previous tag, so the notes cover the whole history instead.
+      - name: Write release notes
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          PREVIOUS_TAG: ${{ steps.version.outputs.previous_tag }}
+        run: |
+          if [[ -n "$PREVIOUS_TAG" ]]; then
+            commits=$(git log "${PREVIOUS_TAG}..${TAG}" --pretty=format:"- %s (%h)" --no-merges)
+          else
+            commits=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
+          {
+            printf '%s\n\n' "## What's Changed"
+            if [[ -n "$commits" ]]; then
+              printf '%s\n' "$commits"
+            else
+              printf '%s\n' "- No changes recorded."
+            fi
+            printf '\n'
+            if [[ -n "$PREVIOUS_TAG" ]]; then
+              printf '%s\n' "**Full Changelog**: https://github.com/${GITHUB_REPOSITORY}/compare/${PREVIOUS_TAG}...${TAG}"
+            fi
+          } > RELEASE_NOTES.md
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.version.outputs.tag }}
-          PREVIOUS_TAG: ${{ steps.version.outputs.previous_tag }}
           ASSET: ${{ steps.package.outputs.asset }}
         run: |
-          # Bound generated notes to the previous tag when one exists.
-          notes_args=()
-          if [[ -n "$PREVIOUS_TAG" ]]; then
-            notes_args+=(--notes-start-tag "$PREVIOUS_TAG")
-          fi
-
           gh release create "$TAG" "$ASSET" \
             --title "$TAG" \
-            --generate-notes \
-            "${notes_args[@]}"
+            --notes-file RELEASE_NOTES.md
