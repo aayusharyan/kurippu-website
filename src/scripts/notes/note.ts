@@ -76,9 +76,9 @@ export class NoteView {
     this.editBtn.addEventListener('click', () => api.update(noteId(), { mode: 'edit' }));
     this.previewBtn.addEventListener('click', () => api.update(noteId(), { mode: 'preview' }));
     deleteButton.addEventListener('click', () => api.remove(noteId()));
-    // A minimised note can't stay in edit mode. Focus follows the control that replaces the one just clicked.
+    // Preserve the current mode behind the chip so reopening returns to the same edit or preview state.
     minBtn.addEventListener('click', () => {
-      api.update(noteId(), { min: true, mode: 'preview' });
+      api.update(noteId(), { min: true });
       mini.focus({ preventScroll: true });
     });
     // A small move drags the chip; a tap (under a few pixels) still opens the note.
