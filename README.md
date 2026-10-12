@@ -225,7 +225,7 @@ The run does this, in order, and stops at the first failure:
 4. Packs `dist/` as `kurippu-site-vX.Y.0.tar.gz` and keeps it as a workflow artifact for 31 days.
 5. Deploys `dist/` to the live Firebase Hosting channel with the latest `firebase-tools`.
 6. Commits the version bump as `chore: bump version to X.Y.0`, pushes it to `main`, then creates and pushes the `vX.Y.0` tag.
-7. Publishes a GitHub Release for that tag, with generated notes covering everything since the previous tag and the tarball attached.
+7. Publishes a GitHub Release for that tag. The notes list each commit since the previous tag (subject and short hash), with a compare link, and the tarball is attached. The first release lists the whole history.
 
 The commit and tag are pushed only after the deploy succeeds, so every tag on `main` is a version that went live. If the deploy fails, nothing is tagged and the run can simply be started again. Two runs never overlap: a second one waits for the first.
 
