@@ -147,11 +147,13 @@ Visitors who have the extension get a small easter egg. A band of the site's own
 
 ## The uninstall feedback page
 
-When someone removes the extension, it opens `/uninstalled/` in a new tab (the extension sets that with `chrome.runtime.setUninstallURL`; the change lives in the extension repository). The page asks why they left. Every question is optional: reasons (pick any), how long they used it, a free-text note styled as a Kurippu note, and a tick box that reveals an email field if they are happy to be contacted about the feedback. The markup is in `src/components/feedback/` and the behaviour in `src/scripts/feedback/`.
+When someone removes the extension, Chrome opens this page at `https://kurippu.yush.dev/uninstalled/`. The extension registers that address with `chrome.runtime.setUninstallURL`; that registration is documented in the [extension repository](https://github.com/aayusharyan/kurippu) README under "Uninstall feedback". This repository owns the page: the questions, what gets posted, and the contract below.
+
+The page asks why they left. Every question is optional: reasons (pick any), how long they used it, a free-text note styled as a Kurippu note, and a tick box that reveals an email field if they are happy to be contacted about the feedback. The markup is in `src/components/feedback/` and the behaviour in `src/scripts/feedback/`.
 
 - **Out of search:** the page carries `noindex` (`Base` takes a `noindex` prop) and is left out of `sitemap.xml`. It is not listed as a page in `llms.txt` or `llms-full.txt`; their privacy summaries still describe the intended handling of submitted feedback.
-- **Nothing is sent until the visitor presses Send.** The form then posts to `https://api.kurippu.com/uninstall/`. The answers are never stored in the browser and never go to Google Analytics; the click tracker only records that the button was pressed.
-- **`npm run dev` never posts.** It waits a moment and shows the thank-you view, so the whole flow can be tried locally. A production build served with `npm run preview` uses the real endpoint.
+- **Nothing is sent until the visitor presses Send.** The form then posts to `https://api.kurippu.com/uninstall/`. That URL is hardcoded in `src/scripts/feedback/submit.ts`. It is not an environment variable. The answers are never stored in the browser and never go to Google Analytics; the click tracker only records that the button was pressed.
+- **`npm run dev` never posts.** It waits a moment and shows the thank-you view, so the whole flow can be tried locally. A production build served with `npm run preview` uses the live endpoint, so only press **Send feedback** with deliberate test data.
 - **The receiving end has a strict contract.** The request and data-handling rules are below. If its data handling changes, update the privacy policy first.
 - **Reason ids are the data.** Each reason posts a stable id (`place`, `switched` and so on), not its wording, so rewording a label changes nothing downstream. Adding or renaming an id needs the receiving end to learn it first.
 - **The "How to remove it" links** point at `#managing-and-deleting-your-data` in the privacy policy, so keep that `id` on the section.
